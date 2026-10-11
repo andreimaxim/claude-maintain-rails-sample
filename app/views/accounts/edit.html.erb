@@ -1,0 +1,23 @@
+<% content_for :title, "Account settings" %>
+
+<h1>Account settings</h1>
+
+<%= form_with model: current_user, url: account_path, method: :patch, class: "stacked-form" do |form| %>
+  <%= render "errors", record: current_user %>
+
+  <div class="field">
+    <span class="label">Email</span>
+    <span><%= current_user.email %></span>
+  </div>
+
+  <div class="field">
+    <%= form.label :time_zone %>
+    <%= form.time_zone_select :time_zone, nil, {}, aria: { describedby: "time_zone_hint" } %>
+    <small id="time_zone_hint" class="hint">Reminder times and your daily digest use this time zone.</small>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Save settings" %>
+    <%= link_to "Cancel", notes_path %>
+  </div>
+<% end %>

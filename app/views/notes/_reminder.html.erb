@@ -1,0 +1,46 @@
+<section id="reminder" class="reminder" aria-labelledby="reminder_heading">
+  <h2 id="reminder_heading">Reminder</h2>
+
+  <% if note.reminder_sent_at %>
+    <p>
+      <span class="reminder-sent">Sent.</span> The reminder for
+      <time datetime="<%= note.reminder_at.iso8601 %>"><%= l note.reminder_at, format: :reminder %></time>
+      was emailed to you.
+    </p>
+  <% elsif note.reminder_scheduled? %>
+    <p>
+      <span class="reminder-scheduled">Scheduled</span> for
+      <time datetime="<%= note.reminder_at.iso8601 %>"><%= l note.reminder_at, format: :reminder %></time>.
+      You will be emailed then.
+    </p>
+    <div class="reminder-postpone">
+      <%= button_to "Remind me a day later", note_reminder_postponement_path(note), class: "secondary-button", aria: { describedby: "next_day_reminder" } %>
+      <span id="next_day_reminder" class="hint">
+        24 hours later: <time datetime="<%= note.next_day_reminder_at.iso8601 %>"><%= l note.next_day_reminder_at, format: :reminder %></time>
+      </span>
+    </div>
+  <% elsif note.reminder_epoch %>
+    <p>
+      Imported for
+      <time datetime="<%= note.reminder_at.iso8601 %>"><%= l note.reminder_at, format: :reminder %></time>,
+      not scheduled yet.
+    </p>
+    <%= button_to "Schedule this reminder", note_reminder_path(note), class: "secondary-button" %>
+  <% else %>
+    <p class="empty">No reminder.</p>
+  <% end %>
+
+  <%= form_with url: note_reminder_path(note), scope: :reminder, class: "reminder-form" do |form| %>
+    <%= render "errors", record: note %>
+
+    <div class="field">
+      <%= form.label :at, note.reminder_epoch ? "Remind me at another time" : "Remind me at" %>
+      <%= form.datetime_local_field :at, value: note.reminder_at&.strftime("%Y-%m-%dT%H:%M"), required: true, aria: { describedby: "reminder_time_zone" } %>
+      <small id="reminder_time_zone" class="hint">
+        Times are in <%= note.notebook.user.time_zone %>. <%= link_to "Change time zone", edit_account_path %>
+      </small>
+    </div>
+
+    <%= form.submit "Schedule reminder" %>
+  <% end %>
+</section>

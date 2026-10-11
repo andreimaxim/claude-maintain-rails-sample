@@ -1,0 +1,8 @@
+You asked to be reminded about "<%= @note.title %>" in <%= @note.notebook.name %> at <%= l @note.reminder_at, format: :reminder %>.
+<% if @note.annotation %>
+
+Your annotation:
+<%= @note.annotation %>
+<% end %>
+
+<%= note_url(@note) %>

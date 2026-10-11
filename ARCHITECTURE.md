@@ -62,7 +62,8 @@ Margin Notes is a reading-notebook application. Implemented so far:
   nothing. A reader's annotation and optional reminder epoch belong to the note,
   not the citation. Annotations are plain text in both the preview and note page;
   line breaks are preserved on the note page, but markup is displayed literally.
-  Nothing schedules reminders yet.
+  Applying an import does not schedule its reminders; the reader schedules each
+  one from its note.
 - A reader can also enter a DOI on the note form (`Note#doi=`), which cites the
   shared citation with that exact, trimmed DOI or creates it.
 - A reader requests metadata for the citation on one of their notes with
@@ -120,6 +121,51 @@ Margin Notes is a reading-notebook application. Implemented so far:
   fragment that expires at the export's deadline. The download action does not
   read that cache. The page does not update itself while an export is queued or
   working. Nothing purges expired files; they remain in storage.
+- Each reader has a time zone (`User#time_zone`, UTC by default), chosen on the
+  account settings page (`AccountsController`). Reminder times and digest days
+  use it. Other pages still show times in UTC.
+- A note's reminder is its `reminder_epoch`, a time in seconds since 1970, set by
+  an import or by the reader. `RemindersController#create`, nested under the
+  note, reads a date and time the reader entered in their time zone
+  (`User#local_time`), or, with none, uses the stored time. `Note#schedule_reminder`
+  queues `NoteReminderJob` for that time with `set(wait_until:)` and stores the
+  job's ID, under the note's row lock, so a failed enqueue keeps the earlier
+  reminder. A local time that does not exist because of a daylight saving change
+  moves forward, and an ambiguous one takes its first occurrence. A time in the
+  past is sent as soon as a worker runs the job.
+- Scheduling again, or postponing (`ReminderPostponementsController`), replaces the
+  reminder. Earlier jobs stay in Sidekiq's schedule, but send nothing: when a job
+  runs, `Note#send_reminder` takes the row lock and emails the reader only if its
+  job ID is still the note's and the reminder has not been sent, then records
+  `reminder_sent_at`. The note page shows whether a reminder is imported but not
+  scheduled, scheduled, or sent. A job that fails after the email is written can
+  send it again when Sidekiq retries it.
+- Postponing moves the reminder 24 elapsed hours later. The note page previews
+  that time as `reminder_at.to_time + 86_400`, which keeps the reminder's UTC
+  offset. Across a daylight saving change the preview shows the right instant,
+  but at a different offset and wall-clock time from the postponed reminder.
+- A reader requests a digest of their ready notes from the notes page
+  (`DigestsController`). `User#request_digest` reserves the reader's ID in a
+  Redis set for the current date in the reader's time zone
+  (`digest_requests:YYYY-MM-DD`, kept for two days) and queues `DigestJob` with
+  the reader, the request time in the reader's zone, and the share of their notes
+  that are ready, as a `BigDecimal`. A reader whose ID is already in the day's set
+  is told the digest was already requested. If the job cannot be queued, the
+  reservation is removed and the error raised, so the request fails and can be
+  repeated. The reservation prevents repeated requests, not repeated emails:
+  Sidekiq can run a job more than once. Each request logs redis-rb's deprecation
+  warning for a single-member `sadd`, and Sidekiq warns that the job's arguments
+  are not native JSON types, because of the `BigDecimal`.
+- Sidekiq stores the job's arguments as JSON. Active Job 7.0 sends the request
+  time with its UTC offset but deserializes it in the worker's zone, UTC, and the
+  completion arrives as a decimal string such as `"0.6667"`. `DigestMailer` lists
+  the reader's ready notes last updated during that UTC day, and dates the digest
+  by it. Near midnight this can be a different day from the reader's local date
+  that the reservation used. Readers outside UTC can then receive two digests
+  with the same date, and a digest can miss notes updated earlier that local day.
+- The mailers write plain-text email. Development writes each recipient's email
+  to `tmp/mails` (Action Mailer's file delivery); tests use the `:test` delivery
+  method. Production has no delivery method or link host configured.
 - Active Storage serves blobs through signed URLs from its own controllers. Those
   URLs are not checked against the signed-in reader. The embedded blob redirect
   URLs do not expire, although the Disk-service URLs they redirect to do.
@@ -139,7 +185,8 @@ The initial runtime is Ruby 3.3.6 and Rails 7.0.8.7 with Rails 7.0 defaults.
   Stimulus. Jbuilder is available for requested JSON representations, but an HTML
   feature does not automatically need a JSON API.
 - Rails includes the mailer, job, storage, and cable frameworks. Their presence
-  does not mean mail delivery or broadcasts are implemented features. File
+  does not mean broadcasts are implemented features. Email is sent only for
+  reminders and digests, and is not delivered outside development's files. File
   uploads exist only as rich-text attachments.
 - Active Job uses Sidekiq 6.5 as its adapter outside tests, so queued jobs are
   kept in Redis (`REDIS_URL`, by default `redis://localhost:6379`) and run in a
@@ -153,9 +200,9 @@ The initial runtime is Ruby 3.3.6 and Rails 7.0.8.7 with Rails 7.0 defaults.
   module, so it is not in the import map. `@rails/actiontext` is.
   The vendored build comes from the [Trix 1.3.5 release](https://github.com/basecamp/trix/tree/1.3.5)
   and includes its [MIT license](vendor/javascript/trix-1.3.5.LICENSE).
-- Orb setup starts PostgreSQL and Redis. Redis holds Sidekiq's queues; it is not
-  an application cache. The generated production cable configuration names Redis.
-  That configuration is not a verified deployment.
+- Orb setup starts PostgreSQL and Redis. Redis holds Sidekiq's queues and the
+  digest reservations; it is not an application cache. The generated production
+  cable configuration names Redis. That configuration is not a verified deployment.
 
 ## Prefer Rails objects with clear responsibilities
 

@@ -58,7 +58,7 @@ main { max-width: 48rem; margin: 0 auto; padding: 1.5rem; }
 .actions { display: flex; align-items: center; gap: 1rem; }
 
 input, select, textarea, button { font: inherit; }
-input[type="text"], input[type="email"], input[type="password"], input[type="search"], select, textarea { padding: 0.35rem 0.5rem; border: 1px solid #aaa; border-radius: 4px; }
+input[type="text"], input[type="email"], input[type="password"], input[type="search"], input[type="datetime-local"], select, textarea { padding: 0.35rem 0.5rem; border: 1px solid #aaa; border-radius: 4px; }
 
 .button, input[type="submit"], button {
   display: inline-block;
@@ -140,3 +140,15 @@ trix-toolbar .trix-button-group:not(:first-child) { margin-left: 0; }
 .export-queued, .export-working { color: #555; font-weight: bold; }
 .export-completed { color: #1d6b2f; font-weight: bold; }
 .export-cancelled, .export-expired { color: #8a1f11; font-weight: bold; }
+.page-heading .actions form { margin: 0; }
+.secondary-button { background: #fff; color: #1f4f8a; }
+.reminder { margin-top: 1.5rem; padding-top: 0.75rem; border-top: 1px solid #ddd; }
+.reminder h2 { margin: 0 0 0.25rem; font-size: 1.1rem; }
+.reminder p { margin: 0.25rem 0; }
+.reminder form { margin: 0.5rem 0 0; }
+.reminder-postpone { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; }
+.reminder-form { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; }
+.reminder-form .errors, .reminder-form .field { flex-basis: 100%; }
+.reminder-form .field { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+.reminder-scheduled { color: #555; font-weight: bold; }
+.reminder-sent { color: #1d6b2f; font-weight: bold; }

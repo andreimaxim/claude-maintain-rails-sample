@@ -25,9 +25,9 @@ bin/rails db:prepare
 bin/rails server
 ```
 
-Citation metadata requests and notebook exports are background jobs. To complete
-them in development, also run a Sidekiq worker and, for citations, the local
-stand-in provider, each in its own terminal:
+Citation metadata requests, notebook exports, reminders, and digests are
+background jobs. To complete them in development, also run a Sidekiq worker and,
+for citations, the local stand-in provider, each in its own terminal:
 
 ```sh
 bundle exec sidekiq
@@ -40,6 +40,9 @@ comment lists the DOI endings that simulate a missing record or an unavailable
 provider. To use another provider, set `CITATION_PROVIDER_URL`,
 `CITATION_PROVIDER_USER`, and `CITATION_PROVIDER_PASSWORD` for both the server and
 the worker.
+
+Reminder and digest email is not sent. In development, each recipient's
+messages are appended to a file named after their address in `tmp/mails`.
 
 Development caching is off by default, so the exports page renders its
 availability indicator without a cache. Run `bin/rails dev:cache` to toggle Rails'

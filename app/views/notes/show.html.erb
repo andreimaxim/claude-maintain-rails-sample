@@ -12,14 +12,14 @@
     <time datetime="<%= @note.created_at.iso8601 %>"><%= l @note.created_at, format: :short %></time>
   </p>
 
-  <%= render "tags", tags: @note.tags %>
+  <%= render "notes/tags", tags: @note.tags %>
 
   <% if @note.citation_doi || @note.annotation %>
     <dl class="citation">
       <% if @note.citation %>
         <dt>DOI</dt>
         <dd><code><%= @note.citation.doi %></code></dd>
-        <%= render "citation_metadata", note: @note, citation: @note.citation %>
+        <%= render "notes/citation_metadata", note: @note, citation: @note.citation %>
       <% end %>
       <% if @note.annotation %>
         <dt>Annotation</dt>
@@ -30,5 +30,7 @@
 
   <%= @note.body %>
 </article>
+
+<%= render "notes/reminder", note: @note %>
 
 <p><%= link_to "Back to notes", notes_path %></p>

@@ -2,8 +2,12 @@
 
 <div class="page-heading">
   <h1>Notes</h1>
-  <%= link_to "New note", new_note_path, class: "button" %>
+  <div class="actions">
+    <%= button_to "Email today's digest", digest_path, class: "secondary-button", aria: { describedby: "digest_hint" } %>
+    <%= link_to "New note", new_note_path, class: "button" %>
+  </div>
 </div>
+<p id="digest_hint" class="hint">Emails you the ready notes updated today. You can request it once a day.</p>
 
 <%= form_with(model: nil, url: notes_path, method: :get, class: "search", html: { role: "search" }) do |form| %>
   <div class="field">

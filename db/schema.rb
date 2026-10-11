@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_11_180000) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_11_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -102,6 +102,8 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_11_180000) do
     t.string "citation_doi"
     t.text "annotation"
     t.bigint "reminder_epoch"
+    t.string "reminder_job_id"
+    t.datetime "reminder_sent_at"
     t.index ["citation_doi"], name: "index_notes_on_citation_doi"
     t.index ["import_id"], name: "index_notes_on_import_id"
     t.index ["notebook_id"], name: "index_notes_on_notebook_id"
@@ -112,6 +114,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_11_180000) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "time_zone", default: "UTC", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

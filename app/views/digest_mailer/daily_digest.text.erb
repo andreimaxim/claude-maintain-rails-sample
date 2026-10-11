@@ -1,0 +1,14 @@
+Your reading digest for <%= l @date, format: :long %>
+<% if @notes.any? %>
+
+Ready notes updated that day:
+<% @notes.each do |note| %>
+- <%= note.title %> (<%= note.notebook.name %>)
+  <%= note_url(note) %>
+<% end %>
+<% else %>
+
+No ready notes were updated that day.
+<% end %>
+
+<%= number_to_percentage(@completion * 100, precision: 0) %> of your notes were ready when you asked for this digest.

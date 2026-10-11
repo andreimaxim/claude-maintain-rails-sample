@@ -15,7 +15,7 @@ Choose the smallest boundary that can catch the likely mistake:
 | Routing, permissions, persistence, HTML, Turbo, or JSON | `ActionDispatch::IntegrationTest` in `test/controllers/` |
 | A workflow across endpoints | An integration test in `test/integration/` |
 | Browser execution, focus, navigation, or JavaScript interaction | `ApplicationSystemTestCase` in `test/system/` |
-| Scheduling, delivery, and job-specific failure behavior | Rails job or mailer tests when those features exist |
+| Scheduling, delivery, and job-specific failure behavior | Rails job and mailer test helpers, usually in the request test that queues the job |
 
 Do not add a separate test for every method. Prefer assertions that would survive
 an internal refactor. A useful regression test fails for a plausible wrong
@@ -146,6 +146,17 @@ Native Sidekiq jobs such as `ExportJob` do not use the Active Job adapter.
 keeps each pushed job in memory after a JSON round trip, as Redis would. Assert
 `ExportJob.jobs` for the enqueued arguments, call `ExportJob.drain` to run them,
 and clear them in setup.
+
+The Active Job test adapter serializes arguments, but does not round-trip them
+through JSON as Sidekiq does: a `BigDecimal` argument stays a `BigDecimal` in
+tests and arrives as a string in a worker. A time with zone is deserialized in
+UTC in both.
+
+Digest requests reserve the reader in a real Redis set, so those tests need Redis
+(`REDIS_URL`, by default `redis://localhost:6379`). Reservations are outside the
+database transaction, so each test releases the readers and dates it uses before
+starting, and uses dates no other test uses. A refused enqueue is substituted at
+the queue boundary with Minitest's `stub`.
 
 Keep remote services out of ordinary tests. The citation enrichment tests serve
 scripted responses from a loopback HTTP server in the test process, so Faraday's
