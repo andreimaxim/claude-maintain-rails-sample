@@ -30,15 +30,16 @@
 <% if @notes.any? %>
   <ol class="notes">
     <% @notes.each do |note| %>
-      <li id="<%= dom_id(note) %>" class="note">
-        <h2><%= link_to note.title, edit_note_path(note) %></h2>
+      <li id="<%= dom_id(note) %>" class="note<%= " highlight-#{note.highlight_color}" if note.highlight_color.present? %>">
+        <h2><%= link_to note.title, note_path(note) %></h2>
         <p class="meta">
           <%= note.notebook.name %> ·
           <span class="status status-<%= note.status %>"><%= note.status.humanize %></span> ·
           <time datetime="<%= note.created_at.iso8601 %>"><%= l note.created_at, format: :short %></time>
         </p>
+        <%= render "tags", tags: note.tags %>
         <% if note.body.present? %>
-          <p><%= truncate(note.body, length: 160) %></p>
+          <p><%= truncate(note.body.to_plain_text, length: 160) %></p>
         <% end %>
       </li>
     <% end %>

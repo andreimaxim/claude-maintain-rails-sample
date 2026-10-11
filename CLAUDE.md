@@ -1,7 +1,7 @@
 # Margin Notes
 
 Margin Notes is a full-stack Rails reading-notebook application. Signed-in readers
-keep private notebooks of plain-text notes with a searchable list. Develop only the
+keep private notebooks of rich-text notes with a searchable list. Develop only the
 requested feature. Guide examples illustrate conventions, not a feature backlog.
 
 ## Read for the work at hand

@@ -1,11 +1,14 @@
 novels:
   user: reader
   name: Novels
+  slug: novels
 
 essays:
   user: reader
   name: Essays
+  slug: essays
 
 other_research:
   user: other_reader
   name: Private research
+  slug: private-research

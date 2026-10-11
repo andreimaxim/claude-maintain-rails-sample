@@ -83,3 +83,27 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
 .status-ready { color: #1d6b2f; font-weight: bold; }
 
 .empty { color: #555; font-style: italic; }
+
+.hint, .label { font-size: 0.85rem; color: #555; }
+.slug { align-self: flex-start; padding: 0.1rem 0.4rem; background: #eee; border-radius: 4px; }
+.notebooks li { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.75rem; padding: 0.25rem 0; }
+.secondary { font-size: 0.9rem; color: #555; }
+
+trix-editor { min-height: 10rem; background: #fff; border-color: #aaa; }
+trix-toolbar .trix-button-row { flex-wrap: wrap; column-gap: 0.5rem; }
+trix-toolbar .trix-button-group { margin-bottom: 0.25rem; }
+trix-toolbar .trix-button-group:not(:first-child) { margin-left: 0; }
+.trix-content details { margin: 0.5rem 0; padding: 0.5rem 0.75rem; border-left: 3px solid #aaa; background: #f3f3ee; }
+.trix-content summary { cursor: pointer; font-weight: bold; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 0.35rem; list-style: none; padding: 0; margin: 0.35rem 0 0; }
+.note-page .tags { margin-bottom: 0.75rem; }
+.tags li { padding: 0 0.5rem; border: 1px solid #ccc; border-radius: 999px; background: #fff; font-size: 0.8rem; }
+
+.highlight-yellow { --highlight: #fff4b8; }
+.highlight-green { --highlight: #dcf2d6; }
+.highlight-blue { --highlight: #dbe8f8; }
+.highlight-pink { --highlight: #f9dde8; }
+.note[class*="highlight-"], .note-page[class*="highlight-"] { padding-left: 0.75rem; border-left: 6px solid var(--highlight); }
+.swatch { padding: 0 0.4rem; border-radius: 4px; background: var(--highlight); }
+.field_with_errors { display: contents; }

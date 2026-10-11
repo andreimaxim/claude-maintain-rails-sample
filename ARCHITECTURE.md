@@ -12,7 +12,25 @@ Margin Notes is a reading-notebook application. Implemented so far:
   authorized note scope. There is no separate `user_id` on notes.
 - `NotesController#index` serves `/notes` and its `/journal` alias. It lists the
   reader's notes newest first with an ID tie-breaker, and supports title search
-  and notebook and status filters.
+  and notebook and status filters. `show` renders one note's rich body.
+- A note's body is Action Text (`has_rich_text :body`), edited with Trix.
+  Attachments are Active Storage blobs on the local Disk service. `Note`
+  rejects attachments over 1 MB. No image processor is installed, so images
+  appear at their original size, without variants. The plain-text bodies that
+  existed before Action Text were moved into rich text by a migration.
+- Action Text sanitizes rich text when it renders. The
+  [Action Text initializer](config/initializers/action_text.rb) adds
+  `details`/`summary` to the default allowlist for collapsible excerpts. Trix
+  does not create those elements, so they come only from stored HTML.
+- Note tags are a JSON array in a text column, entered as a comma-separated
+  list (`Note#tag_list`). The highlight color is `color` in the `settings` jsonb
+  column, which the form edits as `highlight_color`.
+- `NotebooksController#edit`/`update` are notebook settings. The slug is derived
+  from the name on creation and is read-only afterward (`attr_readonly`). The
+  settings form resubmits it unchanged. The export heading is stored in the
+  serialized `preferences` hash. Nothing uses the slug or the export heading yet.
+- Active Storage serves blobs through signed URLs from its own controllers. Those
+  URLs are not checked against the signed-in reader.
 
 These conventions guide further features without prescribing a schema in advance.
 
@@ -26,8 +44,12 @@ The initial runtime is Ruby 3.3.6 and Rails 7.0.8.7 with Rails 7.0 defaults.
   Stimulus. Jbuilder is available for requested JSON representations, but an HTML
   feature does not automatically need a JSON API.
 - Rails includes the mailer, job, storage, and cable frameworks. Their presence
-  does not mean mail delivery, durable jobs, file uploads, or broadcasts are
-  implemented features.
+  does not mean mail delivery, durable jobs, or broadcasts are implemented
+  features. File uploads exist only as rich-text attachments.
+- Action Text 7.0.8.7 bundles Trix 1.3.4. That version cannot load saved HTML
+  that has attributes, such as links or attachments, so the layout loads Trix
+  1.3.5 from `vendor/javascript` as a classic script. Trix 1.x is not an ES
+  module, so it is not in the import map. `@rails/actiontext` is.
 - Orb setup starts PostgreSQL and Redis. Redis is not yet an application cache or
   job dependency. The generated production cable configuration names Redis, but
   the Redis gem is not enabled. That configuration is not a verified deployment.

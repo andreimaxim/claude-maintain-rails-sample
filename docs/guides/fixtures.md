@@ -62,10 +62,14 @@ source-specific details, not patterns this guide asks Margin Notes to reproduce.
 
 ## Rich content and files
 
-Once Action Text or Active Storage is introduced as a feature, keep its fixture
-relationships explicit. Fizzy puts a comment's body in the rich-text fixture file
-and links it through the polymorphic record association. See the
+Keep Action Text and Active Storage fixture relationships explicit. Note bodies
+live in `test/fixtures/action_text/rich_texts.yml`, linked through the
+polymorphic record (`record: middlemarch (Note)`). Fizzy uses the same
+arrangement. See the
 [public rich-text fixtures](../references/fizzy.md#fixtures-and-test-support).
+Serialized columns take their stored form in fixtures. For example, note `tags`
+is a JSON string, and notebooks need an explicit `slug` because fixtures skip
+callbacks.
 
 Use small file fixtures that represent the format under test. A realistic upload
 test should check the content or metadata that matters, not merely that any path

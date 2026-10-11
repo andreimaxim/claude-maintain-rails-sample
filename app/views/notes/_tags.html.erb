@@ -1,0 +1,7 @@
+<% if tags.any? %>
+  <ul class="tags" aria-label="Tags">
+    <% tags.each do |tag| %>
+      <li><%= tag %></li>
+    <% end %>
+  </ul>
+<% end %>

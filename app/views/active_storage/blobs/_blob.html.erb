@@ -1,0 +1,15 @@
+<%# Images are shown at their original size because no image processor is installed for variants. %>
+<figure class="attachment attachment--<%= blob.image? ? "preview" : "file" %> attachment--<%= blob.filename.extension %>">
+  <% if blob.image? %>
+    <%= image_tag rails_blob_path(blob), alt: blob.filename.to_s %>
+  <% end %>
+
+  <figcaption class="attachment__caption">
+    <% if caption = blob.try(:caption) %>
+      <%= caption %>
+    <% else %>
+      <%= link_to blob.filename, rails_blob_path(blob, disposition: "attachment"), class: "attachment__name" %>
+      <span class="attachment__size"><%= number_to_human_size blob.byte_size %></span>
+    <% end %>
+  </figcaption>
+</figure>

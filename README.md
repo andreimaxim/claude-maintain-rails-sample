@@ -1,9 +1,10 @@
 # Margin Notes
 
 A full-stack Rails reading-notebook application. Readers sign in, keep private
-notebooks, and write plain-text notes with a draft/ready status. The note list at
-`/notes` (also bookmarked as `/journal`) supports title search and notebook and
-status filters. The app uses Ruby 3.3.6, Rails 7.0.8.7, PostgreSQL, and Rails'
+notebooks, and write rich-text notes with small attachments, tags, a highlight
+color, and a draft/ready status. The note list at `/notes` (also bookmarked as
+`/journal`) supports title search and notebook and status filters. Each notebook
+has settings for its name and export heading, and a slug fixed at creation. The app uses Ruby 3.3.6, Rails 7.0.8.7, PostgreSQL, and Rails'
 generated importmap/Turbo/Stimulus frontend.
 
 `bin/rails db:seed` creates two development readers, `reader@example.com` and

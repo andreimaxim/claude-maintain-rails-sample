@@ -3,11 +3,11 @@ Rails.application.routes.draw do
 
   resource :session, only: [:new, :create, :destroy]
 
-  resources :notebooks, only: [:index, :new, :create]
+  resources :notebooks, only: [:index, :new, :create, :edit, :update]
 
   # /journal is a bookmark alias for the canonical /notes list.
   get "/notes", "/journal", to: "notes#index"
-  resources :notes, except: [:index, :show]
+  resources :notes, except: :index
 
   root to: redirect("/notes")
 end

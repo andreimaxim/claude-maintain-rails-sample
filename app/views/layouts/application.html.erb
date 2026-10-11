@@ -7,6 +7,10 @@
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%# Trix 1.x is a classic script, not an ES module. Action Text 7.0.8.7 bundles
+        Trix 1.3.4, which cannot load saved HTML that has attributes, such as links
+        and attachments; 1.3.5 fixes that. %>
+    <%= javascript_include_tag "trix-1.3.5.js", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 

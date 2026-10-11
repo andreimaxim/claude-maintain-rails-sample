@@ -16,4 +16,13 @@ class NoteTest < ActiveSupport::TestCase
     assert_not_includes Note.titled_like("MIDDLEMARCH"), notes(:montaigne)
     assert_equal [discount], Note.titled_like("0%").to_a
   end
+
+  test "rejects rich text attachments larger than one megabyte" do
+    large = ActiveStorage::Blob.create_and_upload!(io: StringIO.new("x" * (1.megabyte + 1)), filename: "scan.pdf", content_type: "application/pdf")
+    note = notebooks(:novels).notes.new(title: "Scanned chapter",
+      body: %(<action-text-attachment sgid="#{large.attachable_sgid}"></action-text-attachment>))
+
+    assert_not note.valid?
+    assert_equal ["attachments must be 1 MB or smaller"], note.errors[:body]
+  end
 end

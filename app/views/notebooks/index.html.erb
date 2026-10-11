@@ -8,7 +8,10 @@
 <% if @notebooks.any? %>
   <ul class="notebooks">
     <% @notebooks.each do |notebook| %>
-      <li><%= link_to notebook.name, notes_path(notebook_id: notebook.id) %></li>
+      <li>
+        <%= link_to notebook.name, notes_path(notebook_id: notebook.id) %>
+        <%= link_to "Settings", edit_notebook_path(notebook), class: "secondary", aria: { label: "#{notebook.name} settings" } %>
+      </li>
     <% end %>
   </ul>
 <% else %>

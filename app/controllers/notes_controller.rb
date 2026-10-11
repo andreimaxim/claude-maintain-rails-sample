@@ -1,9 +1,9 @@
 class NotesController < ApplicationController
-  before_action :set_note, only: [:edit, :update, :destroy]
-  before_action :set_notebooks, except: :destroy
+  before_action :set_note, only: [:show, :edit, :update, :destroy]
+  before_action :set_notebooks, except: [:show, :destroy]
 
   def index
-    @notes = current_user.notes.includes(:notebook).newest_first
+    @notes = current_user.notes.includes(:notebook).with_rich_text_body.newest_first
 
     if params[:notebook_id].present?
       @notebook = current_user.notebooks.find(params[:notebook_id])
@@ -27,6 +27,9 @@ class NotesController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def show
   end
 
   def edit
@@ -58,7 +61,7 @@ class NotesController < ApplicationController
     end
 
     def note_params
-      params.require(:note).permit(:title, :body, :status)
+      params.require(:note).permit(:title, :body, :status, :tag_list, :highlight_color)
     end
 
     def owned_notebook

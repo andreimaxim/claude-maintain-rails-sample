@@ -54,29 +54,63 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     assert note.status_ready?
   end
 
-  test "edits a note's title and status" do
+  test "edits a note's rich body, tags, highlight, and status" do
     note = notes(:middlemarch)
+    blob = ActiveStorage::Blob.create_and_upload!(io: file_fixture("page.png").open, filename: "page.png", content_type: "image/png")
 
     get edit_note_path(note)
     assert_select "input[type=radio][name='note[status]'][value=draft][checked]"
+    assert_select "input[name='note[tag_list]'][value=?]", "Victorian, marriage"
+    assert_select "input[type=radio][name='note[highlight_color]'][value=yellow][checked]"
+    assert_select "input[type=hidden][name='note[body]'][value*=?]", "Dorothea and Casaubon."
 
-    patch note_path(note), params: { note: { title: "Middlemarch, book one", status: "ready", notebook_id: note.notebook_id } }
+    patch note_path(note), params: { note: {
+      title: "Middlemarch, book one", status: "ready", notebook_id: note.notebook_id,
+      tag_list: "provincial life, Victorian, , Victorian, reform", highlight_color: "green",
+      body: %(<div>Lydgate arrives.</div><action-text-attachment sgid="#{blob.attachable_sgid}"></action-text-attachment>)
+    } }
 
     assert_redirected_to notes_path
     note.reload
     assert_equal "Middlemarch, book one", note.title
     assert note.status_ready?
+    assert_equal ["provincial life", "Victorian", "reform"], note.tags
+    assert_equal({ "color" => "green" }, note.settings)
+    assert_equal [blob], note.body.embeds.blobs
+
+    get note_path(note)
+    assert_select ".tags li", count: 3
+    assert_select ".trix-content", text: /Lydgate arrives\./
+    assert_select ".trix-content figure.attachment img[src*='page.png']"
+  end
+
+  test "rich text keeps collapsible excerpts and drops unsafe markup" do
+    note = notes(:middlemarch)
+
+    patch note_path(note), params: { note: { title: note.title, notebook_id: note.notebook_id,
+      body: %(<details><summary>Prelude</summary><p>Saint Theresa</p></details><script>alert("x")</script><a href="javascript:alert(1)" onclick="steal()">Link</a>) } }
+    get note_path(note)
+
+    assert_select ".trix-content details summary", "Prelude"
+    assert_select ".trix-content details p", "Saint Theresa"
+    assert_select "main script", count: 0
+    assert_select "main [onclick]", count: 0
+    assert_select "main a[href^=javascript]", count: 0
   end
 
   test "a blank title re-renders the form with the submitted values" do
     note = notes(:middlemarch)
 
-    patch note_path(note), params: { note: { title: "", body: "Revised body", notebook_id: note.notebook_id } }
+    patch note_path(note), params: { note: { title: "", body: "Revised body", tag_list: "reform, medicine", highlight_color: "blue", notebook_id: note.notebook_id } }
 
     assert_response :unprocessable_entity
     assert_select ".errors li", "Title can't be blank"
-    assert_select "textarea[name='note[body]']", "Revised body"
-    assert_equal "Middlemarch chapter notes", note.reload.title
+    assert_select "input[type=hidden][name='note[body]'][value=?]", "Revised body"
+    assert_select "input[name='note[tag_list]'][value=?]", "reform, medicine"
+    assert_select "input[type=radio][name='note[highlight_color]'][value=blue][checked]"
+    note.reload
+    assert_equal "Middlemarch chapter notes", note.title
+    assert_equal ["Victorian", "marriage"], note.tags
   end
 
   test "deletes a note" do
@@ -90,6 +124,7 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
   test "another reader's notes and notebooks cannot be reached" do
     other_note = notes(:other_secret)
 
+    assert_raises(ActiveRecord::RecordNotFound) { get note_path(other_note) }
     assert_raises(ActiveRecord::RecordNotFound) { get edit_note_path(other_note) }
     assert_raises(ActiveRecord::RecordNotFound) do
       patch note_path(other_note), params: { note: { title: "Taken" } }

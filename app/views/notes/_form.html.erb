@@ -20,8 +20,25 @@
   </fieldset>
 
   <div class="field">
+    <%= form.label :tag_list, "Tags" %>
+    <%= form.text_field :tag_list, aria: { describedby: "tag_list_hint" } %>
+    <small id="tag_list_hint" class="hint">Separate tags with commas.</small>
+  </div>
+
+  <fieldset class="field">
+    <legend>Highlight</legend>
+    <%= form.radio_button :highlight_color, "" %>
+    <%= form.label :highlight_color, "None", value: "" %>
+    <% Note::HIGHLIGHT_COLORS.each do |color| %>
+      <%= form.radio_button :highlight_color, color %>
+      <%= form.label :highlight_color, color.humanize, value: color, class: "swatch highlight-#{color}" %>
+    <% end %>
+  </fieldset>
+
+  <div class="field">
     <%= form.label :body %>
-    <%= form.text_area :body, rows: 8 %>
+    <%= form.rich_text_area :body, aria: { describedby: "body_hint" } %>
+    <small id="body_hint" class="hint">Attachments must be <%= number_to_human_size(Note::MAXIMUM_ATTACHMENT_SIZE) %> or smaller.</small>
   </div>
 
   <div class="actions">
