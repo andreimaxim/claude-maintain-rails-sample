@@ -36,7 +36,7 @@ gem "sidekiq", "6.5.12"
 gem "redis", "4.8.1"
 
 # Request citation metadata over HTTP [https://github.com/lostisland/faraday]
-gem "faraday", "1.10.4"
+gem "faraday", "1.10.6"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
