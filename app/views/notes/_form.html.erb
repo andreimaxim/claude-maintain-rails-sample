@@ -27,11 +27,15 @@
 
   <fieldset class="field">
     <legend>Highlight</legend>
-    <%= form.radio_button :highlight_color, "" %>
-    <%= form.label :highlight_color, "None", value: "" %>
+    <span class="radio-option">
+      <%= form.radio_button :highlight_color, "" %>
+      <%= form.label :highlight_color, "None", value: "" %>
+    </span>
     <% Note::HIGHLIGHT_COLORS.each do |color| %>
-      <%= form.radio_button :highlight_color, color %>
-      <%= form.label :highlight_color, color.humanize, value: color, class: "swatch highlight-#{color}" %>
+      <span class="radio-option">
+        <%= form.radio_button :highlight_color, color %>
+        <%= form.label :highlight_color, color.humanize, value: color, class: "swatch highlight-#{color}" %>
+      </span>
     <% end %>
   </fieldset>
 

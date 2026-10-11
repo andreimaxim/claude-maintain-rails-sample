@@ -6,7 +6,8 @@ Margin Notes is a reading-notebook application. Implemented so far:
 
 - A reader (`User`) signs in with email and password through `has_secure_password`.
   `SessionsController` stores only the user ID in the Rails session.
-  `ApplicationController#require_sign_in` protects every other action.
+  `ApplicationController#require_sign_in` protects the application's other
+  controllers, but not Rails' Active Storage controllers.
 - A reader owns `Notebook`s, and each `Note` belongs to one notebook. A note's
   owner is its notebook's owner, so `User#notes` (through notebooks) is the
   authorized note scope. There is no separate `user_id` on notes.
@@ -14,14 +15,18 @@ Margin Notes is a reading-notebook application. Implemented so far:
   reader's notes newest first with an ID tie-breaker, and supports title search
   and notebook and status filters. `show` renders one note's rich body.
 - A note's body is Action Text (`has_rich_text :body`), edited with Trix.
-  Attachments are Active Storage blobs on the local Disk service. `Note`
-  rejects attachments over 1 MB. No image processor is installed, so images
-  appear at their original size, without variants. The plain-text bodies that
-  existed before Action Text were moved into rich text by a migration.
+  Attachments are Active Storage blobs on the local Disk service. `Note` rejects
+  saves that embed a blob over 1 MB. Direct uploads store blobs before this
+  validation, without a size limit. Rejected or abandoned uploads remain
+  unattached, and nothing purges them. No image processor is installed, so images
+  use the original blobs, not variants. A migration converted existing plain-text
+  bodies to escaped rich text.
 - Action Text sanitizes rich text when it renders. The
   [Action Text initializer](config/initializers/action_text.rb) adds
   `details`/`summary` to the default allowlist for collapsible excerpts. Trix
-  does not create those elements, so they come only from stored HTML.
+  does not support those elements. Stored excerpts render as collapsible content,
+  but saving them through the editor permanently flattens that structure, even
+  when only tags or highlight change.
 - Note tags are a JSON array in a text column, entered as a comma-separated
   list (`Note#tag_list`). The highlight color is `color` in the `settings` jsonb
   column, which the form edits as `highlight_color`.
@@ -30,7 +35,11 @@ Margin Notes is a reading-notebook application. Implemented so far:
   settings form resubmits it unchanged. The export heading is stored in the
   serialized `preferences` hash. Nothing uses the slug or the export heading yet.
 - Active Storage serves blobs through signed URLs from its own controllers. Those
-  URLs are not checked against the signed-in reader.
+  URLs are not checked against the signed-in reader. The embedded blob redirect
+  URLs do not expire, although the Disk-service URLs they redirect to do.
+  The direct-upload controller checks CSRF, not sign-in; the public sign-in page
+  supplies a CSRF token to anonymous clients. This sample has no private-file
+  access policy or upload-abuse protection for a public deployment.
 
 These conventions guide further features without prescribing a schema in advance.
 
@@ -50,6 +59,8 @@ The initial runtime is Ruby 3.3.6 and Rails 7.0.8.7 with Rails 7.0 defaults.
   that has attributes, such as links or attachments, so the layout loads Trix
   1.3.5 from `vendor/javascript` as a classic script. Trix 1.x is not an ES
   module, so it is not in the import map. `@rails/actiontext` is.
+  The vendored build comes from the [Trix 1.3.5 release](https://github.com/basecamp/trix/tree/1.3.5)
+  and includes its [MIT license](vendor/javascript/trix-1.3.5.LICENSE).
 - Orb setup starts PostgreSQL and Redis. Redis is not yet an application cache or
   job dependency. The generated production cable configuration names Redis, but
   the Redis gem is not enabled. That configuration is not a verified deployment.

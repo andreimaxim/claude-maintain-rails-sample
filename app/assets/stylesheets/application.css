@@ -106,4 +106,5 @@ trix-toolbar .trix-button-group:not(:first-child) { margin-left: 0; }
 .highlight-pink { --highlight: #f9dde8; }
 .note[class*="highlight-"], .note-page[class*="highlight-"] { padding-left: 0.75rem; border-left: 6px solid var(--highlight); }
 .swatch { padding: 0 0.4rem; border-radius: 4px; background: var(--highlight); }
+.radio-option { display: inline-block; white-space: nowrap; }
 .field_with_errors { display: contents; }
