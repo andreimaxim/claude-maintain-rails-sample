@@ -1,4 +1,5 @@
 require "test_helper"
+require "open3"
 
 class CitationEnrichmentsControllerTest < ActionDispatch::IntegrationTest
   setup { sign_in_as users(:reader) }
@@ -28,6 +29,26 @@ class CitationEnrichmentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".citation dd", "Middlemarch"
     assert_select ".citation a[href=?]", "https://example.org/works/middlemarch"
     assert_select "#citation_metadata", /Completed/
+  end
+
+  test "provider credentials from the environment reach the server unchanged" do
+    user, password = "00123", "sample: value # keep"
+
+    requests = with_provider([200, { title: "Configured work", url: "https://example.org/configured" }]) do
+      env = {
+        "CITATION_PROVIDER_URL" => Rails.application.secrets.citation_provider[:url],
+        "CITATION_PROVIDER_USER" => user,
+        "CITATION_PROVIDER_PASSWORD" => password
+      }
+      # A fresh boot reads ENV instead of this process's cached settings.
+      output, error, status = Open3.capture3(env, Rails.root.join("bin/rails").to_s, "runner",
+        'puts Citation::Provider.new.lookup("10.1000/configured").title')
+
+      assert status.success?, error
+      assert_equal "Configured work\n", output
+    end
+
+    assert_equal [["10.1000/configured", basic_auth(user, password)]], requests
   end
 
   test "a provider that stays unavailable or refuses the request leaves a visible failure" do

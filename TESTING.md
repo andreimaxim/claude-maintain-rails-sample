@@ -143,10 +143,11 @@ separately, and execute the job when its context, serialization, or retries matt
 
 Keep remote services out of ordinary tests. The citation enrichment tests serve
 scripted responses from a loopback HTTP server in the test process, so Faraday's
-retry and authentication run for real without the network. Use a local fake or an already
-available substitution facility at the client boundary. Do not introduce a
-mocking library just to avoid constructing a model, and do not record real tokens
-or personal data in fixtures or HTTP recordings.
+retry and authentication run for real without an external service. One test boots
+a fresh Rails process to verify environment credentials before configuration is
+cached. Use a local fake or an already available substitution facility at the
+client boundary. Do not introduce a mocking library just to avoid constructing a
+model, and do not record real tokens or personal data in fixtures or HTTP recordings.
 
 ## Report evidence accurately
 
