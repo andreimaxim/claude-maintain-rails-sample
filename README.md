@@ -27,6 +27,11 @@ their metadata, are shared by every reader who cites the same DOI. Requests run 
 a Sidekiq worker; development uses a local stand-in provider (see
 [Contributing](CONTRIBUTING.md#prepare-the-environment)).
 
+A reader can export a notebook as a Markdown file. The export runs in the
+Sidekiq worker; its page shows whether it is queued, working, complete, or
+cancelled, how many notes it has processed, and its job ID. A queued or working
+export can be cancelled. A completed file can be downloaded for 24 hours.
+
 `bin/rails db:seed` creates two development readers, `reader@example.com` and
 `other@example.com`, each with the password `password`. There is no registration
 or password recovery.

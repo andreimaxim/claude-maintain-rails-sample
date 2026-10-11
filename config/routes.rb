@@ -6,6 +6,10 @@ Rails.application.routes.draw do
   resources :notebooks, only: [:index, :new, :create, :edit, :update] do
     resource :import_preview, only: :create
     resources :imports, only: [:new, :create, :show]
+    resources :exports, only: [:index, :create] do
+      resource :cancellation, only: :create, controller: "export_cancellations"
+      resource :download, only: :show, controller: "export_downloads"
+    end
   end
 
   # /journal is a bookmark alias for the canonical /notes list.

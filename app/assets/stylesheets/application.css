@@ -129,3 +129,14 @@ trix-toolbar .trix-button-group:not(:first-child) { margin-left: 0; }
 .enrichment-pending { color: #555; font-weight: bold; }
 .enrichment-completed { color: #1d6b2f; font-weight: bold; }
 .enrichment-failed { color: #8a1f11; font-weight: bold; }
+.exports { list-style: none; padding: 0; }
+.export { padding: 0.75rem 0; border-bottom: 1px solid #ddd; }
+.export h2 { margin: 0; font-size: 1.1rem; }
+.export p { margin: 0.25rem 0 0; }
+.export code { overflow-wrap: anywhere; }
+.export progress { width: 100%; max-width: 20rem; }
+.export form { margin: 0.5rem 0 0; }
+.export .secondary-button { padding: 0.1rem 0.6rem; background: #fff; color: #1f4f8a; font-size: 0.85rem; }
+.export-queued, .export-working { color: #555; font-weight: bold; }
+.export-completed { color: #1d6b2f; font-weight: bold; }
+.export-cancelled, .export-expired { color: #8a1f11; font-weight: bold; }

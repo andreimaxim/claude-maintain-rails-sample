@@ -1,0 +1,22 @@
+<% content_for :title, "#{@notebook.name} exports" %>
+
+<div class="page-heading">
+  <h1><%= @notebook.name %> exports</h1>
+  <%= button_to "Export as Markdown", notebook_exports_path(@notebook) %>
+</div>
+
+<p class="hint">
+  An export is a Markdown file of this notebook's notes, oldest first. A completed
+  file can be downloaded for <%= pluralize(Export::AVAILABLE_FOR.in_hours.to_i, "hour") %>.
+  This page does not update itself; reload it to see progress.
+</p>
+
+<% if @exports.any? %>
+  <ol class="exports">
+    <%= render partial: "exports/export", collection: @exports, locals: { notebook: @notebook } %>
+  </ol>
+<% else %>
+  <p class="empty">No exports yet.</p>
+<% end %>
+
+<p><%= link_to "Back to notebooks", notebooks_path %></p>

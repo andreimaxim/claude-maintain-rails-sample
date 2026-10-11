@@ -12,6 +12,7 @@
         <%= link_to notebook.name, notes_path(notebook_id: notebook.id) %>
         <%= link_to "Settings", edit_notebook_path(notebook), class: "secondary", aria: { label: "#{notebook.name} settings" } %>
         <%= link_to "Import", new_notebook_import_path(notebook), class: "secondary", aria: { label: "Import notes into #{notebook.name}" } %>
+        <%= link_to "Export", notebook_exports_path(notebook), class: "secondary", aria: { label: "Export #{notebook.name}" } %>
       </li>
     <% end %>
   </ul>

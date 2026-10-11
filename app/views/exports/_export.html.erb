@@ -1,0 +1,38 @@
+<li class="export" id="<%= dom_id(export) %>">
+  <h2>Requested <time datetime="<%= export.created_at.iso8601 %>"><%= l export.created_at, format: :short %></time></h2>
+
+  <p>
+    <span class="export-status export-<%= export.status %>"><%= export.completed? ? "Complete" : export.status.humanize %></span>
+    <% if export.total_notes_count %>
+      · <%= export.processed_notes_count %> of <%= pluralize(export.total_notes_count, "note") %> processed
+    <% elsif export.queued? %>
+      · Waiting for a worker
+    <% end %>
+  </p>
+
+  <% if export.working? %>
+    <progress value="<%= export.processed_notes_count %>" max="<%= export.total_notes_count %>" aria-label="Notes processed"></progress>
+  <% end %>
+
+  <% if export.job_id %>
+    <p class="meta">Job <code><%= export.job_id %></code></p>
+  <% end %>
+
+  <% if export.cancellable? %>
+    <%= button_to "Cancel export", notebook_export_cancellation_path(notebook, export), class: "secondary-button" %>
+  <% end %>
+
+  <% if export.completed? %>
+    <% cache [export, "availability"], expires_in: export.expires_at - Time.current do %>
+      <p class="availability">
+        <% if export.downloadable? %>
+          <%= link_to "Download #{export.file.filename}", notebook_export_download_path(notebook, export) %>
+          · available until <time datetime="<%= export.expires_at.iso8601 %>"><%= l export.expires_at, format: "%-d %b %Y %H:%M %Z" %></time>
+        <% else %>
+          <span class="export-expired">Expired</span>
+          <time datetime="<%= export.expires_at.iso8601 %>"><%= l export.expires_at, format: "%-d %b %Y %H:%M %Z" %></time>
+        <% end %>
+      </p>
+    <% end %>
+  <% end %>
+</li>

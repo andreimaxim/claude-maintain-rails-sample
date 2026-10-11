@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_10_11_170000) do
+ActiveRecord::Schema[7.0].define(version: 2026_10_11_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -61,6 +61,18 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_11_170000) do
     t.string "enrichment_error"
   end
 
+  create_table "exports", force: :cascade do |t|
+    t.bigint "notebook_id", null: false
+    t.integer "status", default: 0, null: false
+    t.string "job_id"
+    t.integer "processed_notes_count", default: 0, null: false
+    t.integer "total_notes_count"
+    t.datetime "expires_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notebook_id"], name: "index_exports_on_notebook_id"
+  end
+
   create_table "imports", force: :cascade do |t|
     t.bigint "notebook_id", null: false
     t.datetime "created_at", null: false
@@ -105,6 +117,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_10_11_170000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "exports", "notebooks"
   add_foreign_key "imports", "notebooks"
   add_foreign_key "notebooks", "users"
   add_foreign_key "notes", "citations", column: "citation_doi", primary_key: "doi"

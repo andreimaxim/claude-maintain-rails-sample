@@ -141,6 +141,12 @@ Use Rails' job and mailer test helpers for enqueuing/delivery contracts. A test 
 enqueueing does not establish successful job execution. Exercise domain behavior
 separately, and execute the job when its context, serialization, or retries matter.
 
+Native Sidekiq jobs such as `ExportJob` do not use the Active Job adapter.
+[test/test_helper.rb](test/test_helper.rb) loads Sidekiq's fake testing mode, which
+keeps each pushed job in memory after a JSON round trip, as Redis would. Assert
+`ExportJob.jobs` for the enqueued arguments, call `ExportJob.drain` to run them,
+and clear them in setup.
+
 Keep remote services out of ordinary tests. The citation enrichment tests serve
 scripted responses from a loopback HTTP server in the test process, so Faraday's
 retry and authentication run for real without an external service. One test boots

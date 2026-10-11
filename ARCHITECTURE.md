@@ -40,7 +40,7 @@ Margin Notes is a reading-notebook application. Implemented so far:
 - `NotebooksController#edit`/`update` are notebook settings. The slug is derived
   from the name on creation and is read-only afterward (`attr_readonly`). The
   settings form resubmits it unchanged. The export heading is stored in the
-  serialized `preferences` hash. Nothing uses the slug or the export heading yet.
+  serialized `preferences` hash. Markdown exports use both.
 - A reader imports a CSV into one owned notebook. `ImportPreviewsController`
   reads the upload and renders a preview without saving. The preview page sends
   the CSV text back in a hidden field, and `ImportsController#create` reads and
@@ -88,6 +88,36 @@ Margin Notes is a reading-notebook application. Implemented so far:
 - [bin/citation-provider](bin/citation-provider) is a deterministic local stand-in
   for the provider, used for development and demonstrations. No real provider or
   credentials are configured.
+- A reader exports an owned notebook as Markdown from its exports page
+  (`ExportsController`, nested under the notebook). `Notebook#request_export`
+  saves a queued `Export`, then queues the native Sidekiq job `ExportJob` and
+  stores its job ID, which the page shows. The export is committed before the
+  job is queued so the worker can always load it. If Redis refuses the job, the
+  export is removed and the request fails. Each request creates a new export.
+- `Export#generate`, run by the worker, marks the export working with the
+  notebook's note count, then writes the notes oldest first (creation time, then
+  ID). The file starts with the notebook's export heading, or its name when none
+  is set. Each note is a second-level heading with its title on one line,
+  followed by its body as Action Text plain text. Markdown characters are not
+  escaped. Progress is saved after each note. A retried job starts again from
+  the first note. There is no failed state: while Sidekiq retries a failing job,
+  the export shows as working and the reader can cancel it.
+- Cancelling (`ExportCancellationsController`) sets a queued or working export's
+  persisted status to cancelled under its row lock. The worker checks that status
+  before each note and before completing, then stops and keeps no file. Completed
+  and cancelled exports cannot be cancelled.
+- The worker uploads the file to Active Storage (`<slug>.md`) before marking the
+  export completed, so a completed export always has a file. It can be downloaded
+  for 24 hours (`Export::AVAILABLE_FOR`). `ExportDownloadsController` resolves the
+  export through the reader's notebook, so another reader's export is a 404, and
+  checks `Export#downloadable?` on every request before any conditional response.
+  An expired, cancelled, or unfinished export redirects to the exports page. The
+  file is sent by the application, never by an Active Storage URL, with an ETag
+  and Last-Modified from the stored file and `private, must-revalidate`.
+- The exports page caches each completed export's availability indicator as a
+  fragment that expires at the export's deadline. The download action does not
+  read that cache. The page does not update itself while an export is queued or
+  working. Nothing purges expired files; they remain in storage.
 - Active Storage serves blobs through signed URLs from its own controllers. Those
   URLs are not checked against the signed-in reader. The embedded blob redirect
   URLs do not expire, although the Disk-service URLs they redirect to do.
@@ -112,6 +142,9 @@ The initial runtime is Ruby 3.3.6 and Rails 7.0.8.7 with Rails 7.0 defaults.
 - Active Job uses Sidekiq 6.5 as its adapter outside tests, so queued jobs are
   kept in Redis (`REDIS_URL`, by default `redis://localhost:6379`) and run in a
   separate `bundle exec sidekiq` process. Tests use Active Job's test adapter.
+  `ExportJob` is a native Sidekiq job rather than an Active Job, so its job ID can
+  be shown. Sidekiq stores its arguments as JSON, and it uses Sidekiq's default
+  retries.
 - Action Text 7.0.8.7 bundles Trix 1.3.4. That version cannot load saved HTML
   that has attributes, such as links or attachments, so the layout loads Trix
   1.3.5 from `vendor/javascript` as a classic script. Trix 1.x is not an ES
