@@ -60,7 +60,9 @@ Margin Notes is a reading-notebook application. Implemented so far:
   import share a new citation. Two simultaneous imports that introduce the same
   new DOI can conflict; the losing request fails with a server error and saves
   nothing. A reader's annotation and optional reminder epoch belong to the note,
-  not the citation. Nothing schedules reminders yet.
+  not the citation. Annotations are plain text in both the preview and note page;
+  line breaks are preserved on the note page, but markup is displayed literally.
+  Nothing schedules reminders yet.
 - Active Storage serves blobs through signed URLs from its own controllers. Those
   URLs are not checked against the signed-in reader. The embedded blob redirect
   URLs do not expire, although the Disk-service URLs they redirect to do.

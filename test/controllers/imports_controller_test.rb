@@ -7,7 +7,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     notebook = notebooks(:essays)
     csv = <<~CSV
       title,body_html,doi,annotation,reminder_epoch
-      On idleness,<p>Idle <b>minds</b></p>,10.1000/Essays.1,Read twice,1767225600
+      On idleness,<p>Idle <b>minds</b></p>,10.1000/Essays.1,Read <b>twice</b> & reflect,1767225600
 
       "Of experience","<p>Long
       essay</p>",10.1000/Essays.1,Compare with Bacon,
@@ -19,7 +19,7 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "#line_2 h2", "Line 2: On idleness"
-    assert_select "#line_2 dd", "Read twice"
+    assert_select "#line_2 dd", "Read <b>twice</b> & reflect"
     assert_select "#line_4 h2", "Line 4: Of experience"
     assert_select "#line_4 dd", "Compare with Bacon"
     assert_select "#line_2 time[datetime=?]", "2026-01-01T00:00:00Z"
@@ -33,12 +33,12 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to notebook_import_path(notebook, import)
     idleness, experience = import.notes.order(:id)
     assert_equal [notebook, notebook], [idleness.notebook, experience.notebook]
-    assert_equal ["Read twice", 1767225600], [idleness.annotation, idleness.reminder_epoch]
+    assert_equal ["Read <b>twice</b> & reflect", 1767225600], [idleness.annotation, idleness.reminder_epoch]
     assert_equal ["Compare with Bacon", nil], [experience.annotation, experience.reminder_epoch]
 
     get note_path(idleness)
     assert_select ".trix-content b", "minds"
-    assert_select ".citation dd", text: "Read twice"
+    assert_select ".citation dd", text: "Read <b>twice</b> & reflect"
 
     get notebook_import_path(notebook, import, format: :csv)
     assert_equal "text/csv", response.media_type
@@ -77,6 +77,11 @@ class ImportsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
     assert_select ".errors li", "CSV file must start with the header row title,body_html,doi,annotation,reminder_epoch"
+
+    post notebook_import_preview_path(notebooks(:novels)), params: { import: { file: upload("") } }
+
+    assert_response :unprocessable_entity
+    assert_select ".errors li", "CSV file can't be blank"
 
     post notebook_imports_path(notebooks(:novels)), params: { import: { csv: "" } }
 

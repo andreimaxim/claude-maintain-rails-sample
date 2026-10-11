@@ -17,7 +17,7 @@ class Import < ApplicationRecord
 
   # Reads one byte past the limit, which is enough to reject a larger file.
   def file=(upload)
-    self.csv = upload.read(MAXIMUM_SIZE + 1).to_s.force_encoding(Encoding::UTF_8)
+    self.csv = String.new(upload.read(MAXIMUM_SIZE + 1).to_s, encoding: Encoding::UTF_8)
   end
 
   def csv

@@ -22,7 +22,7 @@
       <% end %>
       <% if @note.annotation %>
         <dt>Annotation</dt>
-        <dd><%= simple_format @note.annotation %></dd>
+        <dd><%= simple_format h(@note.annotation) %></dd>
       <% end %>
     </dl>
   <% end %>

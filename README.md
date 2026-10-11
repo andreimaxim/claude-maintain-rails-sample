@@ -15,8 +15,8 @@ title,body_html,doi,annotation,reminder_epoch
 ```
 
 Only `title` is required. `body_html` becomes the rich-text body. A `doi` looks
-like `10.1234/example`. `annotation` is the reader's own comment on the citation,
-and `reminder_epoch` is a time in seconds since 1970 (UTC). Reminders are stored
+like `10.1234/example`. `annotation` is the reader's plain-text comment on the
+citation, and `reminder_epoch` is a time in seconds since 1970 (UTC). Reminders are stored
 but not yet sent. The import shows a preview with each row's source line and
 errors before anything is saved, then imports all rows or none.
 
