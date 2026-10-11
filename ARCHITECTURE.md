@@ -41,6 +41,26 @@ Margin Notes is a reading-notebook application. Implemented so far:
   from the name on creation and is read-only afterward (`attr_readonly`). The
   settings form resubmits it unchanged. The export heading is stored in the
   serialized `preferences` hash. Nothing uses the slug or the export heading yet.
+- A reader imports a CSV into one owned notebook. `ImportPreviewsController`
+  reads the upload and renders a preview without saving. The preview page sends
+  the CSV text back in a hidden field, and `ImportsController#create` reads and
+  validates it again rather than trusting the preview. `Import#apply` saves the
+  import and each row's note in one transaction. If any row cannot be saved,
+  nothing from the batch remains. The receipt page and its CSV download list
+  each imported note's title and DOI. Submitting the same preview twice creates
+  two imports.
+- `Import` accepts one format: UTF-8 CSV with the header row
+  `title,body_html,doi,annotation,reminder_epoch`, at most 100 notes and 100 KB.
+  Only the title is required. Previews identify rows by their source line, so a
+  quoted multi-line body keeps the line where its row starts. Body HTML takes the
+  same Action Text assignment and render-time sanitization as the editor.
+- A `Citation` is identified by its DOI, the table's `doi` primary key, and is
+  shared by every reader who cites it. A DOI is stored as given apart from
+  surrounding whitespace, so case variants are different citations. Rows in one
+  import share a new citation. Two simultaneous imports that introduce the same
+  new DOI can conflict; the losing request fails with a server error and saves
+  nothing. A reader's annotation and optional reminder epoch belong to the note,
+  not the citation. Nothing schedules reminders yet.
 - Active Storage serves blobs through signed URLs from its own controllers. Those
   URLs are not checked against the signed-in reader. The embedded blob redirect
   URLs do not expire, although the Disk-service URLs they redirect to do.

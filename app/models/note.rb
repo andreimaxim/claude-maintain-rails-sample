@@ -3,6 +3,8 @@ class Note < ApplicationRecord
   MAXIMUM_ATTACHMENT_SIZE = 1.megabyte
 
   belongs_to :notebook
+  belongs_to :import, optional: true
+  belongs_to :citation, optional: true, foreign_key: :citation_doi, validate: true
   has_rich_text :body
 
   enum status: { draft: 0, ready: 1 }, _prefix: true
@@ -13,6 +15,7 @@ class Note < ApplicationRecord
 
   validates :title, presence: true
   validates :color, inclusion: { in: HIGHLIGHT_COLORS }, allow_blank: true
+  validates :reminder_epoch, numericality: { only_integer: true, greater_than: 0, less_than: 10_000_000_000 }, allow_nil: true
   validate :attachments_are_small
 
   scope :newest_first, -> { order(created_at: :desc, id: :desc) }

@@ -112,3 +112,15 @@ trix-toolbar .trix-button-group:not(:first-child) { margin-left: 0; }
 .swatch { padding: 0 0.4rem; border-radius: 4px; background: var(--highlight); }
 .radio-option { display: inline-block; white-space: nowrap; }
 .field_with_errors { display: contents; }
+
+.import-rows { list-style: none; padding: 0; }
+.import-row { padding: 0.75rem 0; border-bottom: 1px solid #ddd; }
+.import-row h2 { margin: 0; font-size: 1.1rem; overflow-wrap: anywhere; }
+.import-row.invalid { padding-left: 0.75rem; border-left: 6px solid #e0a49a; }
+.row-errors { margin: 0.25rem 0; padding-left: 1.25rem; color: #8a1f11; }
+.import-row dl, .citation { display: grid; grid-template-columns: max-content 1fr; gap: 0.15rem 0.75rem; margin: 0.35rem 0 0; font-size: 0.9rem; }
+.import-row dt, .citation dt { color: #555; }
+.import-row dd, .citation dd { margin: 0; overflow-wrap: anywhere; }
+.citation dd p { margin: 0 0 0.35rem; }
+.hint p { margin: 0 0 0.35rem; }
+.hint code { overflow-wrap: anywhere; }

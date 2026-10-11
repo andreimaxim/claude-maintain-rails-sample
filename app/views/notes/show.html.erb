@@ -14,6 +14,19 @@
 
   <%= render "tags", tags: @note.tags %>
 
+  <% if @note.citation_doi || @note.annotation %>
+    <dl class="citation">
+      <% if @note.citation_doi %>
+        <dt>DOI</dt>
+        <dd><code><%= @note.citation_doi %></code></dd>
+      <% end %>
+      <% if @note.annotation %>
+        <dt>Annotation</dt>
+        <dd><%= simple_format @note.annotation %></dd>
+      <% end %>
+    </dl>
+  <% end %>
+
   <%= @note.body %>
 </article>
 

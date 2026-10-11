@@ -1,0 +1,24 @@
+<% content_for :title, "Import receipt" %>
+
+<div class="page-heading">
+  <h1>Imported into <%= @notebook.name %></h1>
+  <%= link_to "Download receipt (CSV)", notebook_import_path(@notebook, @import, format: :csv), class: "button" %>
+</div>
+
+<p class="meta">
+  <time datetime="<%= @import.created_at.iso8601 %>"><%= l @import.created_at, format: :short %></time> ·
+  <%= pluralize(@notes.size, "note") %>
+</p>
+
+<ol class="notes">
+  <% @notes.each do |note| %>
+    <li class="note">
+      <h2><%= link_to note.title, note_path(note) %></h2>
+      <% if note.citation %>
+        <p class="meta">DOI <code><%= note.citation.doi %></code></p>
+      <% end %>
+    </li>
+  <% end %>
+</ol>
+
+<p><%= link_to "View #{@notebook.name} notes", notes_path(notebook_id: @notebook.id) %></p>

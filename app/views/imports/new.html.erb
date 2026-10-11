@@ -1,0 +1,5 @@
+<% content_for :title, "Import notes" %>
+
+<h1>Import notes into <%= @notebook.name %></h1>
+
+<%= render "imports/form", import: @import, notebook: @notebook %>

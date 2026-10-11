@@ -1,0 +1,68 @@
+<% content_for :title, "Preview import" %>
+
+<h1>Preview import into <%= @notebook.name %></h1>
+
+<% invalid_rows = @import.rows.count { |row| row.note.errors.any? } %>
+
+<% if invalid_rows.zero? %>
+  <p>Nothing has been saved yet. These <%= pluralize(@import.rows.size, "note") %> will be added to <%= @notebook.name %>.</p>
+
+  <%= form_with model: @import, url: notebook_imports_path(@notebook), class: "actions" do |form| %>
+    <%= form.hidden_field :csv %>
+    <%= form.submit "Import #{pluralize(@import.rows.size, "note")}" %>
+    <%= link_to "Cancel", notebooks_path %>
+  <% end %>
+<% else %>
+  <div class="errors" role="alert">
+    <h2><%= pluralize(invalid_rows, "row") %> cannot be imported.</h2>
+    <p>Nothing has been saved. Correct the file and preview it again.</p>
+  </div>
+<% end %>
+
+<% annotations = @import.annotations.stringify_keys %>
+
+<ol class="import-rows">
+  <% @import.rows.each do |row| %>
+    <li id="line_<%= row.line %>" class="import-row<%= " invalid" if row.note.errors.any? %>">
+      <h2>Line <%= row.line %>: <%= row.note.title.presence || "Untitled" %></h2>
+
+      <% if row.note.errors.any? %>
+        <ul class="row-errors">
+          <% row.note.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <dl>
+        <% if row.note.citation %>
+          <dt>DOI</dt>
+          <dd><code><%= row.note.citation.doi %></code></dd>
+        <% end %>
+        <% if annotations[row.line] %>
+          <dt>Annotation</dt>
+          <dd><%= annotations[row.line] %></dd>
+        <% end %>
+        <% if row.note.reminder_epoch_before_type_cast.present? %>
+          <dt>Reminder</dt>
+          <dd>
+            <% if row.note.errors.include?(:reminder_epoch) %>
+              <%= row.note.reminder_epoch_before_type_cast %>
+            <% else %>
+              <time datetime="<%= Time.at(row.note.reminder_epoch).utc.iso8601 %>"><%= l Time.at(row.note.reminder_epoch).utc, format: :long %> UTC</time>
+            <% end %>
+          </dd>
+        <% end %>
+        <% if row.note.body.present? %>
+          <dt>Body</dt>
+          <dd><%= truncate(row.note.body.to_plain_text, length: 160) %></dd>
+        <% end %>
+      </dl>
+    </li>
+  <% end %>
+</ol>
+
+<% if invalid_rows.nonzero? %>
+  <h2>Preview another file</h2>
+  <%= render "imports/form", import: @notebook.imports.new, notebook: @notebook %>
+<% end %>

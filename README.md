@@ -7,6 +7,19 @@ color, and a draft/ready status. The note list at `/notes` (also bookmarked as
 has settings for its name and export heading, and a slug fixed at creation. The app uses Ruby 3.3.6, Rails 7.0.8.7, PostgreSQL, and Rails'
 generated importmap/Turbo/Stimulus frontend.
 
+A reader can import notes into a notebook from a UTF-8 CSV file of up to 100
+notes and 100 KB, with this header row:
+
+```csv
+title,body_html,doi,annotation,reminder_epoch
+```
+
+Only `title` is required. `body_html` becomes the rich-text body. A `doi` looks
+like `10.1234/example`. `annotation` is the reader's own comment on the citation,
+and `reminder_epoch` is a time in seconds since 1970 (UTC). Reminders are stored
+but not yet sent. The import shows a preview with each row's source line and
+errors before anything is saved, then imports all rows or none.
+
 `bin/rails db:seed` creates two development readers, `reader@example.com` and
 `other@example.com`, each with the password `password`. There is no registration
 or password recovery.

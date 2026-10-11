@@ -1,0 +1,26 @@
+<%= form_with model: import, url: notebook_import_preview_path(notebook), class: "stacked-form", data: { turbo: false } do |form| %>
+  <%= render "errors", record: import %>
+
+  <div class="field">
+    <%= form.label :file, "CSV file" %>
+    <%= form.file_field :file, accept: ".csv,text/csv", required: true, aria: { describedby: "import_format" } %>
+  </div>
+
+  <div id="import_format" class="hint">
+    <p>
+      Use UTF-8 with this header row, up to <%= Import::MAXIMUM_ROWS %> notes and
+      <%= number_to_human_size(Import::MAXIMUM_SIZE) %>:
+      <code><%= Import::HEADERS.join(",") %></code>.
+    </p>
+    <p>
+      Only the title is required. The DOI looks like <code>10.1234/example</code>.
+      A reminder epoch is a time in seconds since 1970 (UTC). Nothing is saved until
+      you review the preview and import it.
+    </p>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Preview import" %>
+    <%= link_to "Cancel", notebooks_path %>
+  </div>
+<% end %>

@@ -31,3 +31,9 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    attributes:
+      import:
+        csv: CSV file
+      note:
+        citation: DOI

@@ -3,7 +3,10 @@ Rails.application.routes.draw do
 
   resource :session, only: [:new, :create, :destroy]
 
-  resources :notebooks, only: [:index, :new, :create, :edit, :update]
+  resources :notebooks, only: [:index, :new, :create, :edit, :update] do
+    resource :import_preview, only: :create
+    resources :imports, only: [:new, :create, :show]
+  end
 
   # /journal is a bookmark alias for the canonical /notes list.
   get "/notes", "/journal", to: "notes#index"
