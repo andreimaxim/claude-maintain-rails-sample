@@ -14,6 +14,13 @@ Margin Notes is a reading-notebook application. Implemented so far:
 - `NotesController#index` serves `/notes` and its `/journal` alias. It lists the
   reader's notes newest first with an ID tie-breaker, and supports title search
   and notebook and status filters. `show` renders one note's rich body.
+- Pagy 8.6.3 paginates that filtered list after ordering, 10 notes per page by
+  default. The search form offers 5, 10, 25, or 50 as the `per_page` URL
+  parameter. Larger requested sizes are capped at 50. Next and previous links keep
+  the filters and page size. A blank, zero, negative, or nonnumeric page shows the
+  first page, and a page past the end shows the last page. The form never sends
+  an invalid size. A blank, zero, negative, or nonnumeric `per_page` in a URL is
+  not handled, and Pagy raises `Pagy::VariableError`.
 - A note's body is Action Text (`has_rich_text :body`), edited with Trix.
   Attachments are Active Storage blobs on the local Disk service. `Note` rejects
   saves that embed a blob over 1 MB. Direct uploads store blobs before this

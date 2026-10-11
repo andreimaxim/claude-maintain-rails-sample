@@ -45,6 +45,56 @@ class NotesControllerTest < ActionDispatch::IntegrationTest
     assert_select ".empty", "No notes match these filters."
   end
 
+  test "pages through filtered notes newest first, keeping the filters and page size" do
+    essays = notebooks(:essays)
+    # Created newest first, so ID order is the reverse of the promised order.
+    13.downto(1) { |n| essays.notes.create!(title: format("Reading %02d", n), status: "ready", created_at: Time.utc(2026, 10, 1, n)) }
+    essays.notes.create!(title: "Reading draft", status: "draft", created_at: Time.utc(2026, 10, 2))
+    notebooks(:novels).notes.create!(title: "Reading elsewhere", status: "ready", created_at: Time.utc(2026, 10, 2))
+    filters = { "query" => "reading", "notebook_id" => essays.id.to_s, "status" => "ready", "per_page" => "5" }
+
+    get notes_path, params: filters.merge("page" => "2")
+
+    assert_equal ["Reading 08", "Reading 07", "Reading 06", "Reading 05", "Reading 04"], css_select(".note h2").map { _1.text.strip }
+    assert_select ".range", "Displaying notes 6-10 of 13 in total"
+    assert_select "select[name=per_page] option[selected]", "5"
+    assert_equal filters.merge("page" => "1"), Rack::Utils.parse_query(URI(css_select("a[rel=prev]").first["href"]).query)
+    next_url = URI(css_select("a[rel=next]").first["href"])
+    assert_equal notes_path, next_url.path
+    assert_equal filters.merge("page" => "3"), Rack::Utils.parse_query(next_url.query)
+
+    get next_url.to_s
+
+    assert_equal ["Reading 03", "Reading 02", "Reading 01"], css_select(".note h2").map { _1.text.strip }
+    assert_select ".range", "Displaying notes 11-13 of 13 in total"
+    assert_select "a[rel=prev]"
+    assert_select "a[rel=next]", count: 0
+  end
+
+  test "invalid pages show the first page and page size is capped at 50" do
+    50.times { |n| notebooks(:novels).notes.create!(title: format("Chapter %02d", n + 1), created_at: Time.utc(2026, 10, 1) + n.hours) }
+    notebooks(:other_research).notes.create!(title: "Another reader's newest", created_at: Time.utc(2026, 11, 1))
+
+    ["", "0", "-1", "two"].each do |page|
+      get notes_path, params: { page: page }
+
+      assert_response :success
+      assert_select ".note", count: 10
+      assert_select ".note:first-child h2", "Chapter 50"
+      assert_select ".range", "Displaying notes 1-10 of 52 in total"
+    end
+
+    get notes_path, params: { per_page: "500", page: "2" }
+
+    assert_equal ["Montaigne on friendship", "Middlemarch chapter notes"], css_select(".note h2").map { _1.text.strip }
+    assert_select ".range", "Displaying notes 51-52 of 52 in total"
+    assert_equal({ "per_page" => "50", "page" => "1" }, Rack::Utils.parse_query(URI(css_select("a[rel=prev]").first["href"]).query))
+
+    get notes_path, params: { per_page: "50", page: "9" }
+
+    assert_select ".range", "Displaying notes 51-52 of 52 in total"
+  end
+
   test "creates a note in an owned notebook" do
     post notes_path, params: { note: { title: "Woolf on reading", body: "Common reader.", status: "ready", notebook_id: notebooks(:essays).id } }
 

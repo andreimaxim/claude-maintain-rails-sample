@@ -82,6 +82,10 @@ input[type="text"], input[type="email"], input[type="password"], input[type="sea
 .meta { font-size: 0.85rem; color: #555; }
 .status-ready { color: #1d6b2f; font-weight: bold; }
 
+.range { margin: 0; font-size: 0.9rem; color: #555; }
+.pagination { display: flex; justify-content: space-between; padding: 1rem 0; }
+.pagination [rel="next"] { margin-left: auto; }
+
 .empty { color: #555; font-style: italic; }
 
 .hint, .label { font-size: 0.85rem; color: #555; }

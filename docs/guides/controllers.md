@@ -105,6 +105,9 @@ relation into an array early just to filter or sort in Ruby.
 Fizzy's [board controller](../references/fizzy.md#boards-and-caching) composes
 card scopes and preloading before rendering a page. Do not copy its pagination
 helper or assume its adapter behavior. Those dependencies are not installed here.
+Margin Notes paginates with Pagy 8.6.3. `NotesController#index` calls `pagy` on
+its finished relation; [its initializer](../../config/initializers/pagy.rb) sets
+the page-size parameter and limits.
 
 For expensive list endpoints, test contrasting records and several associated
 objects. Assert membership and the declared ordering or count contract. A broader

@@ -1,4 +1,6 @@
 class NotesController < ApplicationController
+  include Pagy::Backend
+
   before_action :set_note, only: [:show, :edit, :update, :destroy]
   before_action :set_notebooks, except: [:show, :destroy]
 
@@ -12,6 +14,8 @@ class NotesController < ApplicationController
 
     @notes = @notes.where(status: params[:status]) if Note.statuses.key?(params[:status])
     @notes = @notes.titled_like(params[:query]) if params[:query].present?
+
+    @pagy, @notes = pagy(@notes)
   end
 
   def new
