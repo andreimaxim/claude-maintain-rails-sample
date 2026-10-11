@@ -114,6 +114,8 @@ Margin Notes is a reading-notebook application. Implemented so far:
   An expired, cancelled, or unfinished export redirects to the exports page. The
   file is sent by the application, never by an Active Storage URL, with an ETag
   and Last-Modified from the stored file and `private, must-revalidate`.
+  A failed upload can leave an unattached blob row without a stored file. Nothing
+  cleans up those rows, and each failed retry can leave another one.
 - The exports page caches each completed export's availability indicator as a
   fragment that expires at the export's deadline. The download action does not
   read that cache. The page does not update itself while an export is queued or

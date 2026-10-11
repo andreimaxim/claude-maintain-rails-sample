@@ -10,9 +10,13 @@ class ExportTest < ActiveSupport::TestCase
     # The reader cancels just after the worker records its first note.
     cancel = ->(*, payload) { Export.find(export.id).cancel if payload[:sql].start_with?('UPDATE "exports" SET "processed_notes_count"') }
 
+    uploads = 0
     assert_no_difference -> { ActiveStorage::Blob.count } do
-      ActiveSupport::Notifications.subscribed(cancel, "sql.active_record") { export.generate }
+      ActiveSupport::Notifications.subscribed(->(*) { uploads += 1 }, "service_upload.active_storage") do
+        ActiveSupport::Notifications.subscribed(cancel, "sql.active_record") { export.generate }
+      end
     end
+    assert_equal 0, uploads, "the worker stops instead of writing and discarding a file"
 
     export.reload
     assert export.cancelled?
