@@ -26,12 +26,14 @@ class ExportsControllerTest < ActionDispatch::IntegrationTest
     assert_select "##{dom_id(export)} button", "Cancel export"
 
     completed_at = Time.utc(2026, 10, 11, 9)
-    travel_to(completed_at) { ExportJob.drain }
+    travel_to(completed_at) do
+      ExportJob.drain
 
-    get notebook_exports_path(notebook)
-    assert_select "##{dom_id(export)}", /Complete\s+· 2 of 2 notes processed/
-    assert_select "##{dom_id(export)} button", count: 0
-    assert_select "##{dom_id(export)} a[href=?]", notebook_export_download_path(notebook, export), "Download novels.md"
+      get notebook_exports_path(notebook)
+      assert_select "##{dom_id(export)}", /Complete\s+· 2 of 2 notes processed/
+      assert_select "##{dom_id(export)} button", count: 0
+      assert_select "##{dom_id(export)} a[href=?]", notebook_export_download_path(notebook, export), "Download novels.md"
+    end
 
     travel_to(completed_at + 24.hours - 1.second) do
       get notebook_export_download_path(notebook, export)
