@@ -29,6 +29,12 @@ class CitationEnrichmentsControllerTest < ActionDispatch::IntegrationTest
     assert_select ".citation dd", "Middlemarch"
     assert_select ".citation a[href=?]", "https://example.org/works/middlemarch"
     assert_select "#citation_metadata", /Completed/
+
+    # A worker can load the citation before the request that queued it commits.
+    loaded_early = Citation.find("10.1000/eliot.1871")
+    post note_citation_enrichment_path(note)
+    with_provider([200, { title: "Middlemarch", url: "https://example.org/works/middlemarch" }]) { loaded_early.enrich }
+    assert citation.reload.enrichment_completed?
   end
 
   test "provider credentials from the environment reach the server unchanged" do
