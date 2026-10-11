@@ -1,24 +1,16 @@
-# README
+# Margin Notes
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A full-stack Rails reading-notebook application, currently at the scaffold stage.
+The baseline uses Ruby 3.3.6, Rails 7.0.8.7, PostgreSQL, and Rails' generated
+importmap/Turbo/Stimulus frontend. Application features have not been added yet.
 
-Things you may want to cover:
+## Develop the application
 
-* Ruby version
+- [Contributing](CONTRIBUTING.md): environment setup, development, and delivery.
+- [Architecture](ARCHITECTURE.md): responsibilities and design conventions.
+- [Testing](TESTING.md): behavioral tests, fixtures, browser checks, and commands.
+- [Agent instructions](CLAUDE.md): task-specific Rails skills and detailed guides.
 
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+The guides use attributed [public Fizzy examples](docs/references/fizzy.md), adapted
+to this repository's framework and scope. They are development guidance, not a
+request to reproduce Fizzy's features or infrastructure.
