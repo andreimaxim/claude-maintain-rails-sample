@@ -1,0 +1,8 @@
+<% content_for :title, "Edit note" %>
+
+<h1>Edit note</h1>
+
+<%= render "form", note: @note, notebooks: @notebooks %>
+
+<%= button_to "Delete note", note_path(@note), method: :delete, class: "danger",
+      form: { data: { turbo_confirm: "Delete “#{@note.title}”?" } } %>

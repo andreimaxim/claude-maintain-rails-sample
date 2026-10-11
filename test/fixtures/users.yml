@@ -1,0 +1,7 @@
+reader:
+  email: reader@example.com
+  password_digest: <%= BCrypt::Password.create("password", cost: BCrypt::Engine::MIN_COST) %>
+
+other_reader:
+  email: other@example.com
+  password_digest: <%= BCrypt::Password.create("password", cost: BCrypt::Engine::MIN_COST) %>

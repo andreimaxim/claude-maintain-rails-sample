@@ -79,5 +79,6 @@ model, request, and browser tests as applicable. A fixture edit can change a
 permission, query result, or cache dependency far from the edited file.
 
 Keep seeds and test fixtures separate unless a feature explicitly establishes a
-shared loading mechanism. No browsable seed dataset or fixture-import workflow
-is currently implemented in this scaffold.
+shared loading mechanism. [db/seeds.rb](../../db/seeds.rb) creates two development
+readers with one notebook each. The fixtures define their own `reader` and
+`other_reader` with the password `password`, plus contrasting notebooks and notes.

@@ -1,0 +1,11 @@
+novels:
+  user: reader
+  name: Novels
+
+essays:
+  user: reader
+  name: Essays
+
+other_research:
+  user: other_reader
+  name: Private research

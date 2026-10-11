@@ -1,0 +1,16 @@
+<% content_for :title, "Notebooks" %>
+
+<div class="page-heading">
+  <h1>Notebooks</h1>
+  <%= link_to "New notebook", new_notebook_path, class: "button" %>
+</div>
+
+<% if @notebooks.any? %>
+  <ul class="notebooks">
+    <% @notebooks.each do |notebook| %>
+      <li><%= link_to notebook.name, notes_path(notebook_id: notebook.id) %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="empty">You have no notebooks yet. Create one to start taking notes.</p>
+<% end %>

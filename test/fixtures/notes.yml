@@ -1,0 +1,18 @@
+middlemarch:
+  notebook: novels
+  title: Middlemarch chapter notes
+  body: Dorothea and Casaubon.
+  status: draft
+  created_at: 2026-09-01 09:00:00
+
+montaigne:
+  notebook: essays
+  title: Montaigne on friendship
+  status: ready
+  created_at: 2026-09-02 09:00:00
+
+other_secret:
+  notebook: other_research
+  title: Middlemarch private draft
+  status: draft
+  created_at: 2026-09-03 09:00:00

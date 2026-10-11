@@ -2,10 +2,19 @@
 
 ## Starting point
 
-Margin Notes is a Rails scaffold for a reading-notebook application. No notebook
-schema, authentication, domain workflows, or application routes have been
-implemented. These conventions guide requested features without prescribing a
-schema in advance.
+Margin Notes is a reading-notebook application. Implemented so far:
+
+- A reader (`User`) signs in with email and password through `has_secure_password`.
+  `SessionsController` stores only the user ID in the Rails session.
+  `ApplicationController#require_sign_in` protects every other action.
+- A reader owns `Notebook`s, and each `Note` belongs to one notebook. A note's
+  owner is its notebook's owner, so `User#notes` (through notebooks) is the
+  authorized note scope. There is no separate `user_id` on notes.
+- `NotesController#index` serves `/notes` and its `/journal` alias. It lists the
+  reader's notes newest first with an ID tie-breaker, and supports title search
+  and notebook and status filters.
+
+These conventions guide further features without prescribing a schema in advance.
 
 The initial runtime is Ruby 3.3.6 and Rails 7.0.8.7 with Rails 7.0 defaults.
 [Gemfile](Gemfile), [Gemfile.lock](Gemfile.lock), [.ruby-version](.ruby-version), and
@@ -82,9 +91,14 @@ the same rule.
 
 ## Authorization is not presentation
 
-When authentication is implemented, define ownership and the authorized lookup
-scope together. Resolve nested records through their authorized parent. Neither
-an unguessable ID nor a hidden or disabled button grants or checks permission.
+Define ownership and the authorized lookup scope together. Resolve records
+through the signed-in reader: `current_user.notebooks` and `current_user.notes`.
+Direct lookups outside that scope raise `ActiveRecord::RecordNotFound`, which is
+a 404 in production. A submitted `notebook_id` is resolved through
+`current_user.notebooks.find_by`, never assigned directly. A missing or foreign
+notebook fails validation and renders the form with 422, without saving the note.
+Resolve nested records through their authorized parent. Neither an unguessable ID
+nor a hidden or disabled button grants or checks permission.
 
 Keep actor-dependent decisions explicit in domain APIs and reusable rendering.
 If request-local state is introduced, set and reset it at the request boundary.

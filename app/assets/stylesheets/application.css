@@ -13,3 +13,73 @@
  *= require_tree .
  *= require_self
  */
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: #222;
+  background: #fafaf7;
+}
+
+a { color: #1f4f8a; }
+
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+}
+
+.site-header nav { display: flex; gap: 1rem; }
+.site-name { font-weight: bold; text-decoration: none; color: inherit; }
+.account { display: flex; align-items: center; gap: 0.75rem; margin-left: auto; font-size: 0.9rem; }
+.account form { margin: 0; }
+
+main { max-width: 48rem; margin: 0 auto; padding: 1.5rem; }
+
+.page-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+
+.flash { padding: 0.5rem 0.75rem; border-radius: 4px; background: #e8f3e8; }
+.flash-alert, .errors { padding: 0.5rem 0.75rem; border-radius: 4px; background: #fbe9e7; color: #8a1f11; }
+.errors h2 { margin: 0; font-size: 1rem; }
+
+.stacked-form .field { display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem; }
+.stacked-form fieldset.field { display: block; border: 0; padding: 0; }
+.stacked-form legend { padding: 0; margin-bottom: 0.25rem; }
+.stacked-form fieldset label { margin-right: 1rem; }
+
+.search { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.75rem; padding: 1rem; margin-bottom: 1.5rem; background: #fff; border: 1px solid #ddd; border-radius: 4px; }
+.search .field { display: flex; flex-direction: column; gap: 0.25rem; }
+
+.actions { display: flex; align-items: center; gap: 1rem; }
+
+input, select, textarea, button { font: inherit; }
+input[type="text"], input[type="email"], input[type="password"], input[type="search"], select, textarea { padding: 0.35rem 0.5rem; border: 1px solid #aaa; border-radius: 4px; }
+
+.button, input[type="submit"], button {
+  display: inline-block;
+  padding: 0.35rem 0.85rem;
+  border: 1px solid #1f4f8a;
+  border-radius: 4px;
+  background: #1f4f8a;
+  color: #fff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account button { background: #fff; color: #1f4f8a; }
+.danger { margin-top: 2rem; }
+.danger button { border-color: #8a1f11; background: #fff; color: #8a1f11; }
+
+.notes { list-style: none; padding: 0; }
+.note { padding: 0.75rem 0; border-bottom: 1px solid #ddd; }
+.note h2 { margin: 0; font-size: 1.1rem; }
+.note p { margin: 0.25rem 0 0; }
+.meta { font-size: 0.85rem; color: #555; }
+.status-ready { color: #1d6b2f; font-weight: bold; }
+
+.empty { color: #555; font-style: italic; }

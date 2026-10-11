@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>MarginNotes</title>
+    <title><%= content_for?(:title) ? "#{yield(:title)} · Margin Notes" : "Margin Notes" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -11,6 +11,26 @@
   </head>
 
   <body>
-    <%= yield %>
+    <header class="site-header">
+      <%= link_to "Margin Notes", root_path, class: "site-name" %>
+      <% if current_user %>
+        <nav aria-label="Main">
+          <%= link_to "Notes", notes_path %>
+          <%= link_to "Notebooks", notebooks_path %>
+        </nav>
+        <div class="account">
+          <span><%= current_user.email %></span>
+          <%= button_to "Sign out", session_path, method: :delete %>
+        </div>
+      <% end %>
+    </header>
+
+    <main>
+      <% flash.each do |type, message| %>
+        <p class="flash flash-<%= type %>" role="<%= type == "alert" ? "alert" : "status" %>"><%= message %></p>
+      <% end %>
+
+      <%= yield %>
+    </main>
   </body>
 </html>

@@ -1,0 +1,17 @@
+<% content_for :title, "New notebook" %>
+
+<h1>New notebook</h1>
+
+<%= form_with model: @notebook, class: "stacked-form" do |form| %>
+  <%= render "errors", record: @notebook %>
+
+  <div class="field">
+    <%= form.label :name %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Create notebook" %>
+    <%= link_to "Cancel", notebooks_path %>
+  </div>
+<% end %>

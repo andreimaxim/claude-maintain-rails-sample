@@ -1,0 +1,31 @@
+<%= form_with model: note, class: "stacked-form" do |form| %>
+  <%= render "errors", record: note %>
+
+  <div class="field">
+    <%= form.label :title %>
+    <%= form.text_field :title, required: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :notebook_id, "Notebook" %>
+    <%= form.collection_select :notebook_id, notebooks, :id, :name, { prompt: "Choose a notebook" }, required: true %>
+  </div>
+
+  <fieldset class="field">
+    <legend>Status</legend>
+    <% Note.statuses.each_key do |status| %>
+      <%= form.radio_button :status, status %>
+      <%= form.label :status, status.humanize, value: status %>
+    <% end %>
+  </fieldset>
+
+  <div class="field">
+    <%= form.label :body %>
+    <%= form.text_area :body, rows: 8 %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit %>
+    <%= link_to "Cancel", notes_path %>
+  </div>
+<% end %>

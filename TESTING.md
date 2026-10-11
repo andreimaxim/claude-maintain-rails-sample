@@ -51,8 +51,8 @@ bin/rails test test/models
 To run one file, pass its path to `bin/rails test`. Append `:LINE` to that path to
 select a test.
 
-The scaffold has no application tests, so a zero-test run is not feature coverage.
-No RuboCop, security-audit command, or `bin/ci` is configured.
+The Gemfile keeps Minitest on 5.x because Rails 7.0's test runner fails under
+Minitest 6. No RuboCop, security-audit command, or `bin/ci` is configured.
 
 [test/test_helper.rb](test/test_helper.rb) loads all fixtures and configures
 processor-count parallel workers.

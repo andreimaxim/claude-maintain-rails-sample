@@ -1,8 +1,8 @@
 # Margin Notes
 
-Margin Notes is a full-stack Rails reading-notebook application. The app is still
-the generated scaffold, with no notebook features. Develop only the requested
-feature. Guide examples illustrate conventions, not a feature backlog.
+Margin Notes is a full-stack Rails reading-notebook application. Signed-in readers
+keep private notebooks of plain-text notes with a searchable list. Develop only the
+requested feature. Guide examples illustrate conventions, not a feature backlog.
 
 ## Read for the work at hand
 

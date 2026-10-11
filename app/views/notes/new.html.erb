@@ -1,0 +1,9 @@
+<% content_for :title, "New note" %>
+
+<h1>New note</h1>
+
+<% if @notebooks.none? %>
+  <p class="empty">Create a <%= link_to "notebook", new_notebook_path %> before adding notes.</p>
+<% end %>
+
+<%= render "form", note: @note, notebooks: @notebooks %>

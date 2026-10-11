@@ -1,0 +1,50 @@
+<% content_for :title, "Notes" %>
+
+<div class="page-heading">
+  <h1>Notes</h1>
+  <%= link_to "New note", new_note_path, class: "button" %>
+</div>
+
+<%= form_with(model: nil, url: notes_path, method: :get, class: "search", html: { role: "search" }) do |form| %>
+  <div class="field">
+    <%= form.label :query, "Title contains" %>
+    <%= form.search_field :query, value: params[:query] %>
+  </div>
+
+  <div class="field">
+    <%= form.label :notebook_id, "Notebook" %>
+    <%= form.select :notebook_id, options_from_collection_for_select(@notebooks, :id, :name, @notebook&.id), include_blank: "All notebooks" %>
+  </div>
+
+  <div class="field">
+    <%= form.label :status %>
+    <%= form.select :status, options_for_select(Note.statuses.keys.map { |status| [status.humanize, status] }, params[:status]), include_blank: "Any status" %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Search", name: nil %>
+    <%= link_to "Clear", notes_path %>
+  </div>
+<% end %>
+
+<% if @notes.any? %>
+  <ol class="notes">
+    <% @notes.each do |note| %>
+      <li id="<%= dom_id(note) %>" class="note">
+        <h2><%= link_to note.title, edit_note_path(note) %></h2>
+        <p class="meta">
+          <%= note.notebook.name %> ·
+          <span class="status status-<%= note.status %>"><%= note.status.humanize %></span> ·
+          <time datetime="<%= note.created_at.iso8601 %>"><%= l note.created_at, format: :short %></time>
+        </p>
+        <% if note.body.present? %>
+          <p><%= truncate(note.body, length: 160) %></p>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% elsif params.values_at(:query, :notebook_id, :status).any?(&:present?) %>
+  <p class="empty">No notes match these filters.</p>
+<% else %>
+  <p class="empty">No notes yet. <%= link_to "Write your first note", new_note_path %>.</p>
+<% end %>
