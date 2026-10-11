@@ -16,9 +16,10 @@
 
   <% if @note.citation_doi || @note.annotation %>
     <dl class="citation">
-      <% if @note.citation_doi %>
+      <% if @note.citation %>
         <dt>DOI</dt>
-        <dd><code><%= @note.citation_doi %></code></dd>
+        <dd><code><%= @note.citation.doi %></code></dd>
+        <%= render "citation_metadata", note: @note, citation: @note.citation %>
       <% end %>
       <% if @note.annotation %>
         <dt>Annotation</dt>

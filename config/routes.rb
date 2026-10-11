@@ -10,7 +10,9 @@ Rails.application.routes.draw do
 
   # /journal is a bookmark alias for the canonical /notes list.
   get "/notes", "/journal", to: "notes#index"
-  resources :notes, except: :index
+  resources :notes, except: :index do
+    resource :citation_enrichment, only: :create
+  end
 
   root to: redirect("/notes")
 end

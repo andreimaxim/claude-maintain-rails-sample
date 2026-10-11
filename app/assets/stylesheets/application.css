@@ -124,3 +124,8 @@ trix-toolbar .trix-button-group:not(:first-child) { margin-left: 0; }
 .citation dd p { margin: 0 0 0.35rem; }
 .hint p { margin: 0 0 0.35rem; }
 .hint code { overflow-wrap: anywhere; }
+.citation .enrichment form { display: inline; margin-left: 0.5rem; }
+.citation .enrichment button { padding: 0.1rem 0.6rem; font-size: 0.85rem; }
+.enrichment-pending { color: #555; font-weight: bold; }
+.enrichment-completed { color: #1d6b2f; font-weight: bold; }
+.enrichment-failed { color: #8a1f11; font-weight: bold; }

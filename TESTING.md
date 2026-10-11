@@ -141,7 +141,9 @@ Use Rails' job and mailer test helpers for enqueuing/delivery contracts. A test 
 enqueueing does not establish successful job execution. Exercise domain behavior
 separately, and execute the job when its context, serialization, or retries matter.
 
-Keep remote services out of ordinary tests. Use a local fake or an already
+Keep remote services out of ordinary tests. The citation enrichment tests serve
+scripted responses from a loopback HTTP server in the test process, so Faraday's
+retry and authentication run for real without the network. Use a local fake or an already
 available substitution facility at the client boundary. Do not introduce a
 mocking library just to avoid constructing a model, and do not record real tokens
 or personal data in fixtures or HTTP recordings.

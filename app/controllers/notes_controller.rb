@@ -65,7 +65,7 @@ class NotesController < ApplicationController
     end
 
     def note_params
-      params.require(:note).permit(:title, :body, :status, :tag_list, :highlight_color)
+      params.require(:note).permit(:title, :body, :status, :doi, :tag_list, :highlight_color)
     end
 
     def owned_notebook

@@ -21,6 +21,17 @@ class Note < ApplicationRecord
   scope :newest_first, -> { order(created_at: :desc, id: :desc) }
   scope :titled_like, ->(query) { where("notes.title ILIKE ?", "%#{sanitize_sql_like(query)}%") }
 
+  def doi
+    citation_doi
+  end
+
+  # Cites the shared citation with this exact DOI, ignoring surrounding whitespace.
+  # A blank DOI removes the citation from the note.
+  def doi=(doi)
+    doi = doi.to_s.strip
+    self.citation = (Citation.find_or_initialize_by(doi: doi) if doi.present?)
+  end
+
   def tag_list
     tags.join(", ")
   end

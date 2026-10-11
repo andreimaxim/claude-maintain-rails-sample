@@ -31,8 +31,12 @@ gem "jbuilder"
 # Paginate the note list [https://github.com/ddnexus/pagy]
 gem "pagy", "8.6.3"
 
-# Use Redis adapter to run Action Cable in production
-# gem "redis", "~> 4.0"
+# Run Active Job on Redis through Sidekiq [https://github.com/sidekiq/sidekiq]
+gem "sidekiq", "6.5.12"
+gem "redis", "4.8.1"
+
+# Request citation metadata over HTTP [https://github.com/lostisland/faraday]
+gem "faraday", "1.10.4"
 
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"

@@ -40,6 +40,12 @@
   </fieldset>
 
   <div class="field">
+    <%= form.label :doi, "DOI" %>
+    <%= form.text_field :doi, aria: { describedby: "doi_hint" } %>
+    <small id="doi_hint" class="hint">Optional, for example <code>10.1234/example</code>.</small>
+  </div>
+
+  <div class="field">
     <%= form.label :body %>
     <%= form.rich_text_area :body, aria: { describedby: "body_hint" } %>
     <small id="body_hint" class="hint">Attachments must be <%= number_to_human_size(Note::MAXIMUM_ATTACHMENT_SIZE) %> or smaller.</small>

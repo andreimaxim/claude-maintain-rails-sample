@@ -25,6 +25,21 @@ bin/rails db:prepare
 bin/rails server
 ```
 
+Citation metadata requests are background jobs. To complete them in development,
+also run a Sidekiq worker and the local stand-in provider, each in its own terminal:
+
+```sh
+bundle exec sidekiq
+bin/citation-provider
+```
+
+The worker needs Redis. The provider listens on `127.0.0.1:9393` and accepts the
+development credentials in [config/secrets.yml](config/secrets.yml). Its header
+comment lists the DOI endings that simulate a missing record or an unavailable
+provider. To use another provider, set `CITATION_PROVIDER_URL`,
+`CITATION_PROVIDER_USER`, and `CITATION_PROVIDER_PASSWORD` for both the server and
+the worker.
+
 Do not commit decrypted credentials, the master key, local connection secrets,
 or recordings containing personal information. Supply real credentials through
 the environment or the application's credential mechanism only when needed.

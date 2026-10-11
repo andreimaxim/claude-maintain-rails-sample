@@ -18,5 +18,9 @@ module MarginNotes
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Jobs run in Sidekiq workers, which keep them in Redis (REDIS_URL, or
+    # redis://localhost:6379 by default). Tests use Active Job's test adapter.
+    config.active_job.queue_adapter = :sidekiq
   end
 end

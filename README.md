@@ -20,6 +20,13 @@ citation, and `reminder_epoch` is a time in seconds since 1970 (UTC). Reminders 
 but not yet sent. The import shows a preview with each row's source line and
 errors before anything is saved, then imports all rows or none.
 
+A DOI can also be entered on the note form. From a note's page, a reader can fetch
+the cited work's title and source URL from a citation metadata provider. The page
+shows whether that request is pending, completed, or failed. Citations, and so
+their metadata, are shared by every reader who cites the same DOI. Requests run in
+a Sidekiq worker; development uses a local stand-in provider (see
+[Contributing](CONTRIBUTING.md#prepare-the-environment)).
+
 `bin/rails db:seed` creates two development readers, `reader@example.com` and
 `other@example.com`, each with the password `password`. There is no registration
 or password recovery.

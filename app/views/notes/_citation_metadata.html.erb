@@ -1,0 +1,23 @@
+<% if citation.title %>
+  <dt>Title</dt>
+  <dd><%= citation.title %></dd>
+  <dt>Source</dt>
+  <dd><%= link_to citation.source_url, citation.source_url, rel: "noreferrer" %></dd>
+<% end %>
+
+<dt>Metadata</dt>
+<dd id="citation_metadata" class="enrichment">
+  <% if citation.enrichment_pending? %>
+    <span class="enrichment-pending">Pending.</span> Reload this page to see the result.
+  <% else %>
+    <% if citation.enrichment_completed? %>
+      <span class="enrichment-completed">Completed.</span>
+    <% elsif citation.enrichment_failed? %>
+      <span class="enrichment-failed">Failed:</span> <%= citation.enrichment_error %>
+    <% else %>
+      Not fetched yet.
+    <% end %>
+
+    <%= button_to citation.enrichment_status ? "Fetch again" : "Fetch metadata", note_citation_enrichment_path(note) %>
+  <% end %>
+</dd>

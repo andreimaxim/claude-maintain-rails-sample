@@ -63,6 +63,31 @@ Margin Notes is a reading-notebook application. Implemented so far:
   not the citation. Annotations are plain text in both the preview and note page;
   line breaks are preserved on the note page, but markup is displayed literally.
   Nothing schedules reminders yet.
+- A reader can also enter a DOI on the note form (`Note#doi=`), which cites the
+  shared citation with that exact, trimmed DOI or creates it.
+- A reader requests metadata for the citation on one of their notes with
+  `CitationEnrichmentsController#create`, nested under the note. It resolves the
+  note through `current_user.notes`, so another reader's note, or a note without
+  a DOI, is a 404. `Citation#request_enrichment` marks the citation pending and
+  queues `CitationEnrichmentJob`, unless a request is already pending. The job
+  calls `Citation#enrich`, which stores the provider's title and source URL and
+  marks the citation completed, or records a failure message. Metadata and
+  status belong to the shared citation, so every note citing the DOI shows them.
+  The note page shows the state; it does not update itself while pending.
+- `Citation::Provider` is the HTTP client for the metadata provider. It reads
+  its URL and basic-auth credentials from [config/secrets.yml](config/secrets.yml)
+  through `Rails.application.secrets`; that file reads them from the environment.
+  Faraday retries a GET once on 503. A 401, 403, or 404, or a response without a
+  title and an http(s) URL, fails the enrichment at once. A 429 or 5xx, timeout,
+  or connection failure raises `Citation::Provider::Unavailable`. The job retries
+  that with `retry_on`, three attempts in all at exponentially longer waits, then
+  records the failure instead of passing the error to Sidekiq's own retries. A
+  persistently unavailable provider therefore receives at most six requests per
+  enrichment request. A job that fails for another reason uses Sidekiq's retries
+  and leaves the citation pending meanwhile.
+- [bin/citation-provider](bin/citation-provider) is a deterministic local stand-in
+  for the provider, used for development and demonstrations. No real provider or
+  credentials are configured.
 - Active Storage serves blobs through signed URLs from its own controllers. Those
   URLs are not checked against the signed-in reader. The embedded blob redirect
   URLs do not expire, although the Disk-service URLs they redirect to do.
@@ -82,17 +107,20 @@ The initial runtime is Ruby 3.3.6 and Rails 7.0.8.7 with Rails 7.0 defaults.
   Stimulus. Jbuilder is available for requested JSON representations, but an HTML
   feature does not automatically need a JSON API.
 - Rails includes the mailer, job, storage, and cable frameworks. Their presence
-  does not mean mail delivery, durable jobs, or broadcasts are implemented
-  features. File uploads exist only as rich-text attachments.
+  does not mean mail delivery or broadcasts are implemented features. File
+  uploads exist only as rich-text attachments.
+- Active Job uses Sidekiq 6.5 as its adapter outside tests, so queued jobs are
+  kept in Redis (`REDIS_URL`, by default `redis://localhost:6379`) and run in a
+  separate `bundle exec sidekiq` process. Tests use Active Job's test adapter.
 - Action Text 7.0.8.7 bundles Trix 1.3.4. That version cannot load saved HTML
   that has attributes, such as links or attachments, so the layout loads Trix
   1.3.5 from `vendor/javascript` as a classic script. Trix 1.x is not an ES
   module, so it is not in the import map. `@rails/actiontext` is.
   The vendored build comes from the [Trix 1.3.5 release](https://github.com/basecamp/trix/tree/1.3.5)
   and includes its [MIT license](vendor/javascript/trix-1.3.5.LICENSE).
-- Orb setup starts PostgreSQL and Redis. Redis is not yet an application cache or
-  job dependency. The generated production cable configuration names Redis, but
-  the Redis gem is not enabled. That configuration is not a verified deployment.
+- Orb setup starts PostgreSQL and Redis. Redis holds Sidekiq's queues; it is not
+  an application cache. The generated production cable configuration names Redis.
+  That configuration is not a verified deployment.
 
 ## Prefer Rails objects with clear responsibilities
 
