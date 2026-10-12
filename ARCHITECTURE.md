@@ -122,8 +122,8 @@ Margin Notes is a reading-notebook application. Implemented so far:
   read that cache. The page does not update itself while an export is queued or
   working. Nothing purges expired files; they remain in storage.
 - Each reader has a time zone (`User#time_zone`, UTC by default), chosen on the
-  account settings page (`AccountsController`). Reminder times and digest days
-  use it. Other pages still show times in UTC.
+  account settings page (`AccountsController`). Reminder times use it. Digests
+  follow UTC days, and other pages still show times in UTC.
 - A note's reminder is its `reminder_epoch`, a time in seconds since 1970, set by
   an import or by the reader. `RemindersController#create`, nested under the
   note, reads a date and time the reader entered in their time zone
@@ -146,7 +146,7 @@ Margin Notes is a reading-notebook application. Implemented so far:
   but at a different offset and wall-clock time from the postponed reminder.
 - A reader requests a digest of their ready notes from the notes page
   (`DigestsController`). `User#request_digest` reserves the reader's ID in a
-  Redis set for the current date in the reader's time zone
+  Redis set for the request's UTC date
   (`digest_requests:YYYY-MM-DD`, kept for two days) and queues `DigestJob` with
   the reader, the request time in the reader's zone, and the share of their notes
   that are ready, as a `BigDecimal`. A reader whose ID is already in the day's set
@@ -160,9 +160,9 @@ Margin Notes is a reading-notebook application. Implemented so far:
   time with its UTC offset but deserializes it in the worker's zone, UTC, and the
   completion arrives as a decimal string such as `"0.6667"`. `DigestMailer` lists
   the reader's ready notes last updated during that UTC day, and dates the digest
-  by it. Near midnight this can be a different day from the reader's local date
-  that the reservation used. Readers outside UTC can then receive two digests
-  with the same date, and a digest can miss notes updated earlier that local day.
+  by it. The content day matches the reservation's day, even near local midnight.
+  A digest is a snapshot when its job runs; notes updated afterward are not sent
+  in a second digest for that UTC day.
 - The mailers write plain-text email. Development writes each recipient's email
   to `tmp/mails` (Action Mailer's file delivery); tests use the `:test` delivery
   method. Production has no delivery method or link host configured.

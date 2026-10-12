@@ -13,7 +13,7 @@
   <div class="field">
     <%= form.label :time_zone %>
     <%= form.time_zone_select :time_zone, nil, {}, aria: { describedby: "time_zone_hint" } %>
-    <small id="time_zone_hint" class="hint">Reminder times and your daily digest use this time zone.</small>
+    <small id="time_zone_hint" class="hint">Reminder times use this time zone. Daily digests follow the UTC day.</small>
   </div>
 
   <div class="actions">

@@ -35,8 +35,9 @@ export can be cancelled. A completed file can be downloaded for 24 hours.
 A reader can schedule an email reminder for a note at a date and time in their
 time zone, chosen on the account settings page, and postpone it by a day. From
 the notes page, a reader can request an email digest of the ready notes updated
-that day, once a day. The digest's day is the UTC date of the request, which can
-differ from the reader's date near midnight. Email is written to files in
+that day, once per UTC day. The digest's day and the request limit both use the
+UTC date of the request, which can differ from the reader's date near midnight.
+Email is written to files in
 development rather than sent (see [Contributing](CONTRIBUTING.md#prepare-the-environment)).
 
 `bin/rails db:seed` creates two development readers, `reader@example.com` and

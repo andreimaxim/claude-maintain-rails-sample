@@ -1,6 +1,5 @@
 class User < ApplicationRecord
-  # How long a day's digest reservations are kept. A reader's day ends within a
-  # day of any request made during it, wherever they are.
+  # Keep digest reservations past the end of their UTC day.
   DIGEST_RESERVATIONS_KEPT_FOR = 2.days
 
   has_secure_password
@@ -25,8 +24,8 @@ class User < ApplicationRecord
     nil
   end
 
-  # Queues an email digest of today's ready notes, unless the reader has already
-  # requested one today in their time zone. Returns whether a digest was queued.
+  # Queues an email digest of ready notes updated today (UTC), unless the reader
+  # has already requested one for that UTC day. Returns whether a digest was queued.
   #
   # A Redis set of reader IDs for each day holds the reservations. If the job
   # cannot be queued, the reservation is released and the error raised, so the
@@ -34,7 +33,7 @@ class User < ApplicationRecord
   # deliveries: a job that Sidekiq retries can send its digest more than once.
   def request_digest
     requested_at = Time.current.in_time_zone(time_zone)
-    key = "digest_requests:#{requested_at.to_date.iso8601}"
+    key = "digest_requests:#{requested_at.utc.to_date.iso8601}"
 
     if Sidekiq.redis { |redis| redis.sadd(key, id) }
       begin

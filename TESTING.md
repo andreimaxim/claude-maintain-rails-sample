@@ -153,7 +153,9 @@ tests and arrives as a string in a worker. A time with zone is deserialized in
 UTC in both.
 
 Digest requests reserve the reader in a real Redis set, so those tests need Redis
-(`REDIS_URL`, by default `redis://localhost:6379`). Reservations are outside the
+(`REDIS_URL`, by default `redis://localhost:6379`). Set `REDIS_URL` to a disposable
+Redis database separate from development, for example
+`REDIS_URL=redis://localhost:6379/1 bin/rails test`. Reservations are outside the
 database transaction, so each test releases the readers and dates it uses before
 starting, and uses dates no other test uses. A refused enqueue is substituted at
 the queue boundary with Minitest's `stub`.
