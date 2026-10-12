@@ -30,6 +30,16 @@ class Notebook < ApplicationRecord
     raise
   end
 
+  # The number of notes, in any status, created on each UTC date, newest date
+  # first, as [date, count] pairs. Dates without notes are omitted. Only notes
+  # that still exist are counted, so deleting a note lowers its date's count.
+  # Timestamps are stored in UTC, so their date part is the UTC date. The raw
+  # select returns that date as PostgreSQL's ISO 8601 text.
+  def daily_note_counts
+    days = notes.select("DATE(notes.created_at) AS day, COUNT(*) AS notes_count").group("day").order("day DESC")
+    Note.connection.select_rows(days).map { |day, count| [Date.iso8601(day), count] }
+  end
+
   private
     def assign_slug
       self.slug = name.to_s.parameterize.presence || "notebook"

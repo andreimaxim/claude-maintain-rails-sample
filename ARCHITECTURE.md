@@ -121,6 +121,16 @@ Margin Notes is a reading-notebook application. Implemented so far:
   fragment that expires at the export's deadline. The download action does not
   read that cache. The page does not update itself while an export is queued or
   working. Nothing purges expired files; they remain in storage.
+- A notebook's activity page (`ActivityReportsController#show`, nested under the
+  notebook and linked from the notebooks list) shows how many of its notes were
+  created on each UTC date, newest date first. It is read-only and resolves the
+  notebook through `current_user.notebooks`, so another reader's notebook is a
+  404. `Notebook#daily_note_counts` groups the notes by `DATE(created_at)` in
+  PostgreSQL and reads the rows with a raw `select_rows`, which returns each date
+  as ISO 8601 text; the method parses it with `Date.iso8601`. Every status counts,
+  and dates without notes are omitted. The report is derived from the notes that
+  exist when it is requested, not an activity log: deleting a note lowers its
+  date's count, and nothing records past counts.
 - Each reader has a time zone (`User#time_zone`, UTC by default), chosen on the
   account settings page (`AccountsController`). Reminder times use it. Digests
   follow UTC days, and other pages still show times in UTC.

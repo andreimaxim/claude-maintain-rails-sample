@@ -152,3 +152,6 @@ trix-toolbar .trix-button-group:not(:first-child) { margin-left: 0; }
 .reminder-form .field { display: flex; flex-direction: column; align-items: flex-start; gap: 0.25rem; }
 .reminder-scheduled { color: #555; font-weight: bold; }
 .reminder-sent { color: #1d6b2f; font-weight: bold; }
+.activity-report { border-collapse: collapse; margin: 1rem 0; }
+.activity-report th, .activity-report td { padding: 0.35rem 1.5rem 0.35rem 0; border-bottom: 1px solid #ddd; text-align: left; }
+.activity-report th:last-child, .activity-report td:last-child { padding-right: 0; text-align: right; }

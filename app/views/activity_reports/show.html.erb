@@ -1,0 +1,33 @@
+<% content_for :title, "#{@notebook.name} activity" %>
+
+<h1><%= @notebook.name %> activity</h1>
+
+<p class="hint">
+  The number of notes created on each day, by UTC date, newest first. Drafts and
+  ready notes both count, and days without notes are left out. This is not a
+  permanent activity log: it counts the notes the notebook has now, so deleting a
+  note removes it from its day.
+</p>
+
+<% if @daily_note_counts.any? %>
+  <table class="activity-report">
+    <thead>
+      <tr>
+        <th scope="col">Date (UTC)</th>
+        <th scope="col">Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @daily_note_counts.each do |date, count| %>
+        <tr>
+          <td><time datetime="<%= date.iso8601 %>"><%= l date, format: "%-d %B %Y" %></time></td>
+          <td><%= count %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else %>
+  <p class="empty">This notebook has no notes yet.</p>
+<% end %>
+
+<p><%= link_to "View #{@notebook.name} notes", notes_path(notebook_id: @notebook.id) %> · <%= link_to "Back to notebooks", notebooks_path %></p>

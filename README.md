@@ -32,6 +32,11 @@ Sidekiq worker; its page shows whether it is queued, working, complete, or
 cancelled, how many notes it has processed, and its job ID. A queued or working
 export can be cancelled. A completed file can be downloaded for 24 hours.
 
+Each notebook has an activity page listing how many of its notes were created on
+each UTC date, newest first, skipping dates without notes. It counts the notes the
+notebook has now, so it is not a permanent history: a deleted note is no longer
+counted.
+
 A reader can schedule an email reminder for a note at a date and time in their
 time zone, chosen on the account settings page, and postpone it by a day. From
 the notes page, a reader can request an email digest of the ready notes updated
